@@ -127,3 +127,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VS Code
+.vscode/
+
+# Videos used during testing
+*.mp4
+*.mkv
+*.mpg
+*.webm
+*.avi
+
+# Build/dist files
+build/
+ffmpeg/
