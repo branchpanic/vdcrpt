@@ -6,24 +6,30 @@ from PyQt5.QtQml import QQmlApplicationEngine
 from PyQt5.QtQuick import QQuickItem
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal, QObject
 
+import vdcrpt
 from vdcrpt.corruptor import corrupt_video
-from vdcrpt.corruptions import *
+from vdcrpt.corruptions import stutter
 
 if not os.getenv("QML_DISABLE_DISTANCEFIELD", None):
     os.environ["QML_DISABLE_DISTANCEFIELD"] = "1"
 
 os.environ["QT_QUICK_CONTROLS_STYLE"] = "universal"
 
+icon_path = "icon.png"
+qml_path = "main.qml"
+
 if getattr(sys, "frozen", False):
-    dir_ = os.path.dirname(sys.executable)
-else:
-    dir_ = os.path.dirname(os.path.realpath(__file__))
+    icon_path = os.path.join(sys._MEIPASS, icon_path)
+    qml_path = os.path.join(sys._MEIPASS, qml_path)
 
 app = QGuiApplication(sys.argv)
-app.setWindowIcon(QIcon(os.path.join(dir_, "icon.png")))
+app.setWindowIcon(QIcon(icon_path))
 engine = QQmlApplicationEngine()
-engine.load(QUrl.fromLocalFile(os.path.join(dir_, "main.qml")))
+engine.load(QUrl.fromLocalFile(qml_path))
 window = engine.rootObjects()[0]
+
+
+window.setProperty("version", vdcrpt.__version__)
 
 
 class RenderThread(QThread):
@@ -68,7 +74,12 @@ rt.render_failed.connect(on_render_failed)
 
 
 def start_corrupting(
-    input_video, chunk_size, stutter_min, stutter_max, iterations, output_video
+    input_video: str,
+    chunk_size: int,
+    stutter_min: int,
+    stutter_max: int,
+    iterations: int,
+    output_video: str,
 ):
     rt.input_video = input_video.toLocalFile()
     rt.chunk_size = chunk_size

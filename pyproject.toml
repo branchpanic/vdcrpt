@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "video_corruptor"
-version = "0.0.1"
+version = "0.1.0"
 description = "An experimental tool for corrupting your favorite videos."
 authors = ["dhsavell <dhsavell05@gmail.com>"]
 license = "MPL-2.0"
@@ -14,7 +14,8 @@ ffmpeg-python = "^0.2.0"
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
 pywin32 = "^227"
-cx-freeze = "^6.1"
+pyinstaller = "^3.6"
+invoke = "^1.4.1"
 
 [tool.poetry.scripts]
 vdcrpt = 'video_corruptor.cli:main'

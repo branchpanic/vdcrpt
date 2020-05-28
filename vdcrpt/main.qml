@@ -18,7 +18,7 @@ ApplicationWindow {
 
     Universal.theme: Universal.Dark
 
-    property var version: "0.1.0"
+    property var version: "???"
     property var rendering: false
     property var statusText: "Ready!"
     property var fileSelected: false

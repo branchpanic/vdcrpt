@@ -35,5 +35,5 @@ Codecs
 For best results, use a container and codec that are capable of handling a lot of abuse. ``video_corruptor`` doesn't
 try to protect anything but the file header, so it's always possible for the final render to fail. 
 
-By default, ``video_corruptor`` uses an AVI file with ``vp8`` for video and ``libvorbis`` for audio. Codecs can be set
-with ``--temp_vc`` and ``--temp_ac`` respectively. Any encoders supported by your local build of FFmpeg are usable.
+By default, ``video_corruptor`` uses an AVI file with ``mpeg4`` for video and ``aac`` for audio. Codecs can be set
+with ``--temp_vc`` and ``--temp_ac`` respectively. Any encoders supported by FFmpeg are possible.
