@@ -6,3 +6,6 @@ bin/
 obj/
 
 *.user
+
+*.vdcrpt-data
+*.mp4
