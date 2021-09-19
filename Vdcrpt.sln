@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt", "Vdcrpt\Vdcrpt.csproj", "{825BB3D3-01B7-4FCE-A69E-7F6DECD64B25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Gui", "Vdcrpt.Gui\Vdcrpt.Gui.csproj", "{5588099B-1F53-43D0-A12F-B066D5644C2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Desktop", "Vdcrpt.Desktop\Vdcrpt.Desktop.csproj", "{5588099B-1F53-43D0-A12F-B066D5644C2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Cli", "Vdcrpt.Cli\Vdcrpt.Cli.csproj", "{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.CommandLine", "Vdcrpt.CommandLine\Vdcrpt.CommandLine.csproj", "{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

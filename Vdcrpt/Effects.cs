@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Vdcrpt
 {
+    /// <summary>
+    /// Effects contains miscellaneous functions that generate Actions to use with Video.ModifyBytes.
+    /// </summary>
     public static class Effects
     {
         private static readonly Random EffectRandom = new();
