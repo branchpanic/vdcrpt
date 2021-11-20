@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
         x:Class="Vdcrpt.Desktop.MainWindow"
         Title="vdcrpt">
     <StackPanel Spacing="12" Margin="16">
@@ -14,35 +14,36 @@
                 <Button Grid.Column="0" Margin="0 0 4 0">Open...</Button>
                 <TextBox Grid.Column="1" Margin="4 0 0 0"/>
             </Grid>
+            <Label>Using pre-cached file</Label>
         </StackPanel>
         
         <StackPanel>
             <Label>Chunk Size</Label>
-            <NumericUpDown />
+            <NumericUpDown Name="ChunkSizeField" Value="5000"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="* Auto *">
             <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0 0 4 0">
                 <Label>Min Repetitions</Label>
-                <NumericUpDown />
+                <NumericUpDown Name="MinRepetitionsField" />
             </StackPanel>
 
             <TextBlock Grid.Column="1" Margin = "12 0 12 0" TextAlignment="Center" VerticalAlignment="Center">-</TextBlock>
             
             <StackPanel Orientation="Vertical" Grid.Column="2" Margin="4 0 0 0">
                 <Label>Max Repetitions</Label>
-                <NumericUpDown />
+                <NumericUpDown Name="MaxRepetitionsField" />
             </StackPanel>
         </Grid>
 
         <StackPanel>
             <Label>Iterations</Label>
-            <NumericUpDown />
+            <NumericUpDown Value="20" />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button>Corrupt</Button>
-            <Button>Open Last Output</Button>
+            <Button Name="CorruptButton">Corrupt</Button>
+            <Button Name="OpenLastButton">Open Last Output</Button>
         </StackPanel>
 
         <ProgressBar />
