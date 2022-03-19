@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Vdcrpt
 {
@@ -9,7 +10,7 @@ namespace Vdcrpt
     public static class Effects
     {
         private static readonly Random EffectRandom = new();
-        
+
         /// <summary>
         /// Returns an effect that repeats one chunk of video data,
         /// chunkLength bytes long, somewhere between minTimes and maxTimes
@@ -19,19 +20,39 @@ namespace Vdcrpt
         /// <param name="minTimes">Minimum times to repeat (inclusive</param>
         /// <param name="maxTimes">Maximum times to repeat (inclusive)</param>
         /// <returns>Function that applies the specified corruption</returns>
-        public static Action<List<byte>> Repeat(int chunkLength, int minTimes, int maxTimes)
+        public static Action<List<byte>> Repeat(int iterations, int chunkSize, int chunkRepetitions)
         {
             return data =>
             {
-                var position = EffectRandom.Next(32, data.Count - chunkLength);
-                var times = EffectRandom.Next(minTimes, maxTimes + 1);
-
-                var clip = data.GetRange(position, chunkLength);
-
-                for (var i = 0; i < times; i++)
+                var bytes = data.ToArray();
+                var positions = new int[iterations];
+                for (var i = 0; i < iterations; i++)
                 {
-                    data.InsertRange(position, clip);
+                    positions[i] = EffectRandom.Next(32, data.Count - chunkSize);
                 }
+
+                Array.Sort(positions);
+
+                // Using a big byte array and Buffer.Copy would be faster, but we already have enough memory problems as-is
+                using var stream = new MemoryStream();
+                using var writer = new BinaryWriter(stream);
+
+                var lastEnd = 0;
+                foreach (var pos in positions)
+                {
+                    writer.Write(bytes, lastEnd, pos - lastEnd);
+                    for (var j = 0; j < chunkRepetitions; j++)
+                    {
+                        writer.Write(bytes, pos, chunkSize);
+                    }
+
+                    lastEnd = pos;
+                }
+
+                writer.Write(bytes, lastEnd, data.Count - lastEnd);
+
+                data.Clear();
+                data.AddRange(stream.ToArray());
             };
         }
     }

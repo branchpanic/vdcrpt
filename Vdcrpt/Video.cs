@@ -31,7 +31,7 @@ namespace Vdcrpt
         /// <param name="videoCodec">FFMpeg-supported video codec to use for corruption</param>
         /// <param name="audioCodec">FFMpeg-supported audio codec to use for corruption</param>
         /// <returns></returns>
-        public static Video Prepare(string inputPath, string videoCodec = "mpeg4", string audioCodec = "pcm_mulaw")
+        public static Video Load(string inputPath, string videoCodec = "mpeg4", string audioCodec = "pcm_mulaw")
         {
             var outputPath = GetCachedFilePath(inputPath);
 

@@ -48,7 +48,7 @@ namespace Vdcrpt.CommandLine
                     return 1;
                 }
 
-                var v = Video.Prepare(parsedArgs.InputFile, parsedArgs.VideoCodec, parsedArgs.AudioCodec);
+                var v = Video.Load(parsedArgs.InputFile, parsedArgs.VideoCodec, parsedArgs.AudioCodec);
 
                 for (var i = 0; i < parsedArgs.Iterations; i++)
                 {
