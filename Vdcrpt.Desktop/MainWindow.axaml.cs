@@ -1,5 +1,7 @@
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
@@ -7,6 +9,8 @@ namespace Vdcrpt.Desktop
 {
     public partial class MainWindow : Window
     {
+        private TextBox _inputPathTextBox;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -14,6 +18,21 @@ namespace Vdcrpt.Desktop
 #if DEBUG
             this.AttachDevTools();
 #endif
+
+            _inputPathTextBox = this.Find<TextBox>("InputPathTextBox");
+
+            AddHandler(DragDrop.DropEvent, OnDrop);
+        }
+
+        private void OnDrop(object? sender, DragEventArgs e)
+        {
+            var filenames = e.Data.GetFileNames();
+            if (filenames == null) return;
+
+            var filenamesList = filenames.ToList();
+            if (filenamesList.Count <= 0) return;
+
+            _inputPathTextBox.Text = filenamesList[0];
         }
 
         private void InitializeComponent()
@@ -29,15 +48,16 @@ namespace Vdcrpt.Desktop
                 AllowMultiple = false,
                 Filters =
                 {
-                    new FileDialogFilter { Name = "Common Video Files", Extensions = { "mp4", "avi", "mkv", "mov", "gif" } },
+                    new FileDialogFilter
+                        { Name = "Common Video Files", Extensions = { "mp4", "avi", "mkv", "mov", "gif" } },
                     new FileDialogFilter { Name = "All Files", Extensions = { "*" } },
                 }
             };
 
             var result = await dialog.ShowAsync(this);
             if (result.Length <= 0) return;
-            
-            this.Find<TextBox>("InputPathTextBox").Text = result[0];
+
+            _inputPathTextBox.Text = result[0];
         }
     }
 }

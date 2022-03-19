@@ -18,6 +18,7 @@ namespace Vdcrpt
             _videoData = videoData;
         }
 
+        // TODO: Move to temp directory
         private static string GetCachedFilePath(string path)
         {
             return Path.ChangeExtension(path, ".vdcrpt-data");
@@ -49,6 +50,11 @@ namespace Vdcrpt
             // TODO: Check if existing file is valid
 
             return new Video(new List<byte>(File.ReadAllBytes(outputPath)));
+        }
+
+        public static bool CacheExists(string inputPath)
+        {
+            return File.Exists(GetCachedFilePath(inputPath));
         }
 
         /// <summary>

@@ -8,6 +8,7 @@
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishTrimmed>true</PublishTrimmed>
         <Nullable>enable</Nullable>
+        <AssemblyVersion>0.2.0</AssemblyVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.3" />

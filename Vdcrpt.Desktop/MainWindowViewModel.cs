@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Avalonia.Data;
@@ -202,6 +203,10 @@ namespace Vdcrpt.Desktop
             }
         }
 
+        public string ApplicationVersion { get; } = "Version " +
+                                                    (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3)
+                                                     ?? "<unknown>");
+        
         public ICommand OnCorruptPressed => _onCorruptPressed;
         public ICommand OnOpenResultPressed => _onOpenResultPressed;
 

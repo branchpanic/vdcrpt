@@ -2,58 +2,77 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+        mc:Ignorable="d"
+        Width="400" Height="650"
         x:Class="Vdcrpt.Desktop.MainWindow"
         Title="vdcrpt">
-    <StackPanel Spacing="12" Margin="16">
-		<StackPanel>
-			<TextBlock FontSize="36">vdcrpt</TextBlock>
-		    <TextBlock>Version x.y.z</TextBlock>
-		</StackPanel>
-        
-        <StackPanel>
-            <Label>Video</Label>
-            <Grid ColumnDefinitions="Auto *">
-                <Button Click="OnOpenPressed" Grid.Column="0" Margin="0 0 4 0">Open...</Button>
-                <TextBox Name="InputPathTextBox" Grid.Column="1" Margin="4 0 0 0" Text="{Binding InputPath}"/>
-            </Grid>
-        </StackPanel>
-        
-        <StackPanel>
-            <Label>Burst Size</Label>
-            <NumericUpDown Value="{Binding BurstSize}"/>
-        </StackPanel>
-        
-        <StackPanel>
-            <Label>Burst Length</Label>
-            <NumericUpDown Value="{Binding BurstLength}"/>
-        </StackPanel>
+    <StackPanel>
+        <Border Background="#222">
+            <StackPanel Margin="24" Spacing="6">
+                <TextBlock FontSize="36">vdcrpt</TextBlock>
+                <TextBlock Text="{Binding ApplicationVersion}" />
+            </StackPanel>
+        </Border>
 
-        <!-- <Grid ColumnDefinitions="* Auto *"> -->
-        <!--     <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0 0 4 0"> -->
-        <!--         <Label>Min Repetitions</Label> -->
-        <!--         <NumericUpDown /> -->
-        <!--     </StackPanel> -->
-        <!-- -->
-        <!--     <TextBlock Grid.Column="1" Margin = "12 0 12 0" TextAlignment="Center" VerticalAlignment="Center">-</TextBlock> -->
-        <!--      -->
-        <!--     <StackPanel Orientation="Vertical" Grid.Column="2" Margin="4 0 0 0"> -->
-        <!--         <Label>Max Repetitions</Label> -->
-        <!--         <NumericUpDown /> -->
-        <!--     </StackPanel> -->
-        <!-- </Grid> -->
+        <StackPanel Spacing="16" Margin="16">
+            <StackPanel Margin="0 0 0 20">
+                <Label>Video</Label>
+                <Grid ColumnDefinitions="Auto *">
+                    <Button Click="OnOpenPressed" Grid.Column="0" Margin="0 0 8 0">Open...</Button>
+                    <TextBox
+                        Grid.Column="1"
+                        DragDrop.AllowDrop="True"
+                        
+                        Name="InputPathTextBox"
+                        Text="{Binding InputPath}"
+                        Watermark="Open or drop a video file here"/>
+                </Grid>
+            </StackPanel>
 
-        <StackPanel>
-            <Label>Iterations</Label>
-            <NumericUpDown Value="{Binding Iterations}" />
+            <StackPanel>
+                <Label>Preset</Label>
+                <ComboBox>
+                    <ComboBoxItem>Default</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel>
+                <Label>Burst Size</Label>
+                <NumericUpDown Value="{Binding BurstSize}" />
+            </StackPanel>
+
+            <StackPanel>
+                <Label>Burst Length</Label>
+                <NumericUpDown Value="{Binding BurstLength}" />
+            </StackPanel>
+
+            <!-- <Grid ColumnDefinitions="* Auto *"> -->
+            <!--     <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0 0 4 0"> -->
+            <!--         <Label>Min Repetitions</Label> -->
+            <!--         <NumericUpDown /> -->
+            <!--     </StackPanel> -->
+            <!-- -->
+            <!--     <TextBlock Grid.Column="1" Margin = "12 0 12 0" TextAlignment="Center" VerticalAlignment="Center">-</TextBlock> -->
+            <!--      -->
+            <!--     <StackPanel Orientation="Vertical" Grid.Column="2" Margin="4 0 0 0"> -->
+            <!--         <Label>Max Repetitions</Label> -->
+            <!--         <NumericUpDown /> -->
+            <!--     </StackPanel> -->
+            <!-- </Grid> -->
+
+            <StackPanel Margin="0 0 0 20">
+                <Label>Iterations</Label>
+                <NumericUpDown Value="{Binding Iterations}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding OnCorruptPressed}">Corrupt</Button>
+                <Button Command="{Binding OnOpenResultPressed}">Open Result</Button>
+            </StackPanel>
+
+            <ProgressBar IsIndeterminate="False" Value="{Binding ProgressAmount}" />
+            <TextBlock Text="{Binding ProgressMessage}" />
+
         </StackPanel>
-
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Command="{Binding OnCorruptPressed}">Corrupt</Button>
-            <Button Command="{Binding OnOpenResultPressed}">Open Result</Button>
-        </StackPanel>
-
-        <ProgressBar IsIndeterminate="False" Value="{Binding ProgressAmount}" />
-        <TextBlock Text="{Binding ProgressMessage}"/>
     </StackPanel>
 </Window>
