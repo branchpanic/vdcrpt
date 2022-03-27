@@ -52,7 +52,7 @@ namespace Vdcrpt.CommandLine
 
                 for (var i = 0; i < parsedArgs.Iterations; i++)
                 {
-                    v.ModifyBytes(Effects.Repeat(
+                    v.Transform(Effects.Repeat(
                         parsedArgs.ChunkSize,
                         parsedArgs.MinRepetitions,
                         parsedArgs.MaxRepetitions));

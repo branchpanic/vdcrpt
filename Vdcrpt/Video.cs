@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using FFMpegCore;
+using FFMpegCore.Arguments;
 
 namespace Vdcrpt
 {
@@ -13,15 +15,19 @@ namespace Vdcrpt
     {
         private readonly List<byte> _videoData;
 
+        public int Size => _videoData.Count;
+
         private Video(List<byte> videoData)
         {
             _videoData = videoData;
         }
 
-        // TODO: Move to temp directory
         private static string GetCachedFilePath(string path)
         {
-            return Path.ChangeExtension(path, ".vdcrpt-data");
+            using var md5 = MD5.Create();
+            using var fileStream = File.OpenRead(path);
+            var hashString = BitConverter.ToString(md5.ComputeHash(fileStream));
+            return Path.Join(Path.GetTempPath(), Path.ChangeExtension(hashString, ".vdcrpt-data"));
         }
 
         /// <summary>
@@ -41,13 +47,11 @@ namespace Vdcrpt
                 FFMpegArguments
                     .FromFileInput(inputPath)
                     .OutputToFile(outputPath, true, args => args
-                        .WithVideoCodec("mpeg4")
-                        .WithAudioCodec("pcm_mulaw")
+                        .WithVideoCodec(videoCodec)
+                        .WithAudioCodec(audioCodec)
                         .ForceFormat("avi"))
                     .ProcessSynchronously();
             }
-
-            // TODO: Check if existing file is valid
 
             return new Video(new List<byte>(File.ReadAllBytes(outputPath)));
         }
@@ -62,7 +66,7 @@ namespace Vdcrpt
         /// </summary>
         /// <param name="action">Function to apply to binary data blob</param>
         /// <returns>This Video for chaining</returns>
-        public Video ModifyBytes(Action<List<byte>> action)
+        public Video Transform(Action<List<byte>> action)
         {
             action(_videoData);
             return this;
@@ -81,7 +85,11 @@ namespace Vdcrpt
 
             FFMpegArguments
                 .FromFileInput(tempFile)
+                .WithGlobalOptions(args => args
+                    .WithVerbosityLevel(VerbosityLevel.Fatal))
                 .OutputToFile(outputPath, true, args => args
+                    .WithoutMetadata()
+                    .WithCustomArgument("-fflags +genpts")
                     .WithVideoCodec(videoCodec)
                     .WithAudioCodec(audioCodec))
                 .ProcessSynchronously();

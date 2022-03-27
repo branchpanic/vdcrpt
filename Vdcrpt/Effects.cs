@@ -16,9 +16,6 @@ namespace Vdcrpt
         /// chunkLength bytes long, somewhere between minTimes and maxTimes
         /// times.
         /// </summary>
-        /// <param name="chunkLength">Length of video data to repeat</param>
-        /// <param name="minTimes">Minimum times to repeat (inclusive</param>
-        /// <param name="maxTimes">Maximum times to repeat (inclusive)</param>
         /// <returns>Function that applies the specified corruption</returns>
         public static Action<List<byte>> Repeat(int iterations, int chunkSize, int chunkRepetitions)
         {
@@ -33,7 +30,7 @@ namespace Vdcrpt
 
                 Array.Sort(positions);
 
-                // Using a big byte array and Buffer.Copy would be faster, but we already have enough memory problems as-is
+                // TODO: This is transplanted from a context where the result was being written directly to disk
                 using var stream = new MemoryStream();
                 using var writer = new BinaryWriter(stream);
 
