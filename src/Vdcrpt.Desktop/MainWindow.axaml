@@ -7,6 +7,7 @@
         MinWidth="350" MinHeight="840"
         x:Class="Vdcrpt.Desktop.MainWindow"
         x:Name="Window"
+        Icon="/Assets/Icon.ico"
         Title="vdcrpt">
     <DockPanel>
         <Menu DockPanel.Dock="Top">

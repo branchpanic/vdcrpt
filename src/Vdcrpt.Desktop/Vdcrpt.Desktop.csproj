@@ -2,21 +2,20 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <SelfContained>true</SelfContained>
-        <PublishSingleFile>true</PublishSingleFile>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishTrimmed>true</PublishTrimmed>
-        <Nullable>enable</Nullable>
-        <AssemblyVersion>0.2.0</AssemblyVersion>
+        <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+        <DebugType>None</DebugType>
+        <DebugSymbols>False</DebugSymbols>
+        <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.3" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.3" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.3" />
-        <PackageReference Include="Tommy" Version="3.1.2" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 </Project>
