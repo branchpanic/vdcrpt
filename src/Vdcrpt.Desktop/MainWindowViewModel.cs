@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
-using Avalonia.Logging;
+using FFMpegCore.Exceptions;
 using JetBrains.Annotations;
 
 namespace Vdcrpt.Desktop
@@ -41,7 +40,7 @@ namespace Vdcrpt.Desktop
         private static string GenerateOutputPath(string inputPath)
         {
             var pathNoExt = Path.ChangeExtension(inputPath, null);
-            var pathTimestampNoExt = $"{pathNoExt}_vdcrpt_{DateTime.Now:yyyy-MM-dd_HH-mm}";
+            var pathTimestampNoExt = $"{pathNoExt}_vdcrpt";
 
             string result;
             var increment = 0;
@@ -69,7 +68,7 @@ namespace Vdcrpt.Desktop
                     {
                         OutputPath = GenerateOutputPath(_inputPath);
                     }
-                    
+
                     if (AskForFilename)
                     {
                         // FIXME: This blocks the UI thread!
@@ -97,7 +96,7 @@ namespace Vdcrpt.Desktop
                         OutputPath = chosenPath;
                     }
 
-                    ProgressMessage = obj?.ToString() ?? "null";
+                    ProgressMessage = obj?.ToString() ?? "...";
 
                     _corruptWorker.RunWorkerAsync();
                     OnPropertyChanged(nameof(IsBusy));
@@ -127,9 +126,16 @@ namespace Vdcrpt.Desktop
             _corruptWorker.RunWorkerCompleted += (_, args) =>
             {
                 ProgressAmount = 0;
-                ProgressMessage = args.Error is not null
-                    ? $"Couldn't render video. Try again, and turn down the settings if necessary. {args.Error.Message}"
-                    : $"Done! Saved at {_outputPath}.";
+
+                ProgressMessage = args.Error switch
+                {
+                    FFMpegException { Type: FFMpegExceptionType.Process } =>
+                        "The video failed to render. Try again or lower the settings.",
+                    FFMpegException { Type: FFMpegExceptionType.Operation } => 
+                        $"A tool (FFmpeg) did not behave as expected. Try re-extracting vdcrpt if the error persists: {args.Error.Message}",
+                    not null => $"An unexpected error occurred: {args.Error.Message}",
+                    null => $"Done! Saved at {_outputPath}.",
+                };
 
                 _onCorruptPressed.RaiseCanExecuteChanged();
                 _onOpenResultPressed.RaiseCanExecuteChanged();
@@ -164,7 +170,7 @@ namespace Vdcrpt.Desktop
 
             worker.ReportProgress(75, "Rendering corrupted video...");
             video.Save(_outputPath);
-            
+
             worker.ReportProgress(100, "Finishing up...");
         }
 
@@ -182,6 +188,7 @@ namespace Vdcrpt.Desktop
             }
         }
 
+        [Range(1, int.MaxValue)]
         public int BurstSize
         {
             get => _burstSize;
@@ -193,6 +200,7 @@ namespace Vdcrpt.Desktop
             }
         }
 
+        [Range(1, int.MaxValue)]
         public int TrailLength
         {
             get => _trailLength;
@@ -204,6 +212,7 @@ namespace Vdcrpt.Desktop
             }
         }
 
+        [Range(1, int.MaxValue)]
         public int Iterations
         {
             get => _iterations;

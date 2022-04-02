@@ -5,12 +5,17 @@
         <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
         <DebugType>None</DebugType>
         <DebugSymbols>False</DebugSymbols>
+        <PublishTrimmed>true</PublishTrimmed>
+        <PublishSingleFile>true</PublishSingleFile>
         <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.3" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.3" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.3" />
+        <PackageReference Include="Avalonia" Version="0.10.13" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.13" />
+
+        <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
@@ -18,4 +23,17 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+    <PropertyGroup>
+        <CFBundleName>vdcrpt</CFBundleName>
+        <CFBundleDisplayName>vdcrpt</CFBundleDisplayName>
+        <CFBundleIdentifier>me.branchpanic.vdcrpt</CFBundleIdentifier>
+        <CFBundleShortVersionString>0.0.0</CFBundleShortVersionString>
+        <!-- <CFBundleVersion>1.0.0</CFBundleVersion> -->
+        <!-- <CFBundlePackageType>APPL</CFBundlePackageType> -->
+        <!-- <CFBundleSignature>????</CFBundleSignature> -->
+<!--         <CFBundleExecutable>vdcrpt</CFBundleExecutable> -->
+<!--         <CFBundleIconFile>AppName.icns</CFBundleIconFile> -->
+        <NSPrincipalClass>NSApplication</NSPrincipalClass>
+        <NSHighResolutionCapable>true</NSHighResolutionCapable>
+    </PropertyGroup>
 </Project>
