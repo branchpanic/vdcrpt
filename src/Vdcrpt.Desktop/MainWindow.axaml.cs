@@ -1,7 +1,6 @@
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -32,7 +31,8 @@ namespace Vdcrpt.Desktop
 
             var filenamesList = filenames.ToList();
             if (filenamesList.Count <= 0) return;
-
+            
+            // Propagates to viewmodel
             _inputPathTextBox.Text = filenamesList[0];
         }
 
@@ -56,8 +56,9 @@ namespace Vdcrpt.Desktop
             };
 
             var result = await dialog.ShowAsync(this);
-            if (result.Length <= 0) return;
+            if (result is not { Length: > 0 }) return;
 
+            // Propagates to viewmodel
             _inputPathTextBox.Text = result[0];
         }
     }

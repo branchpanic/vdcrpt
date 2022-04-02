@@ -19,8 +19,6 @@
             <MenuItem Header="Help">
                 <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}" CommandParameter="https://branchpanic.itch.io/vdcrpt"/>
                 <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}" CommandParameter="https://github.com/branchpanic/vdcrpt"/>
-                <Separator/>
-                <MenuItem Header="Copy diagnostic info" Command="{Binding CopyDiagnosticInfo}"/>
             </MenuItem>
         </Menu>
         <StackPanel>
@@ -68,20 +66,6 @@
                     <Label>Trail Length</Label>
                     <NumericUpDown Value="{Binding TrailLength}" Minimum="1" />
                 </StackPanel>
-
-                <!-- <Grid ColumnDefinitions="* Auto *"> -->
-                <!--     <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0 0 4 0"> -->
-                <!--         <Label>Min Repetitions</Label> -->
-                <!--         <NumericUpDown /> -->
-                <!--     </StackPanel> -->
-                <!-- -->
-                <!--     <TextBlock Grid.Column="1" Margin = "12 0 12 0" TextAlignment="Center" VerticalAlignment="Center">-</TextBlock> -->
-                <!--      -->
-                <!--     <StackPanel Orientation="Vertical" Grid.Column="2" Margin="4 0 0 0"> -->
-                <!--         <Label>Max Repetitions</Label> -->
-                <!--         <NumericUpDown /> -->
-                <!--     </StackPanel> -->
-                <!-- </Grid> -->
 
                 <StackPanel Margin="0 0 0 20">
                     <Label>Iterations</Label>
