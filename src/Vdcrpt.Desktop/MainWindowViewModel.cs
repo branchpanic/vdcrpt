@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -322,9 +323,14 @@ namespace Vdcrpt.Desktop
 
         public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
         {
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();
+            }
+            else
+            {
+                // Not sure what's best to do here, but we shouldn't ever reach this branch anyway.
+                Environment.Exit(0);
             }
         });
 

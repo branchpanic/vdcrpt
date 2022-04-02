@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Vdcrpt</RootNamespace>
+    <DebugType>None</DebugType>
+    <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,3 +9,6 @@ obj/
 
 *.vdcrpt-data
 *.mp4
+
+temp/
+dist/

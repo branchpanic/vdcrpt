@@ -3,12 +3,19 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+
         <DebugType>None</DebugType>
         <DebugSymbols>False</DebugSymbols>
+
+        <PublishReadyToRun>false</PublishReadyToRun>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
-        <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
         <Nullable>enable</Nullable>
+
+        <Company>branchpanic</Company>
+        <Product>vdcrpt</Product>
+        <AssemblyVersion>22.04.01</AssemblyVersion>
+        <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.13" />
@@ -31,8 +38,8 @@
         <!-- <CFBundleVersion>1.0.0</CFBundleVersion> -->
         <!-- <CFBundlePackageType>APPL</CFBundlePackageType> -->
         <!-- <CFBundleSignature>????</CFBundleSignature> -->
-<!--         <CFBundleExecutable>vdcrpt</CFBundleExecutable> -->
-<!--         <CFBundleIconFile>AppName.icns</CFBundleIconFile> -->
+        <!-- <CFBundleExecutable>vdcrpt</CFBundleExecutable> -->
+        <!-- <CFBundleIconFile>AppName.icns</CFBundleIconFile> -->
         <NSPrincipalClass>NSApplication</NSPrincipalClass>
         <NSHighResolutionCapable>true</NSHighResolutionCapable>
     </PropertyGroup>
