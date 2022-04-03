@@ -2,11 +2,8 @@
 
 Thank you for downloading vdcrpt!
 
-If you like vdcrpt, consider donating, sharing, and/or tagging your creations
+If you like the program, consider donating, sharing, and/or tagging your creations
 with #vdcrpt.
-
-In any case, you are welcome to rate on itch.io and share your thoughts in the
-comments.
 
 > Note: vdcrpt is optimized for short (0:10 - 1:30) videos of medium
   resolution (about 720p). You can use longer videos, but will need to
@@ -28,19 +25,19 @@ comments.
 
 2. Right click vdcrpt and select Open.
 
-3. If you trust the source, confirm opening the program.
+3. Select "Open" at the prompt.
 
 ### Linux
 
-1. Extract vdcrpt.AppImage from this archive.
+1. Extract the AppImage from this archive.
 
-2. Using a terminal, run `chmod +x vdcrpt.AppImage`.
+2. Using a terminal, run `chmod +x vdcrpt*.AppImage`. Or, using a file manager,
+   mark the AppImage as executable.
 
-3. Double-click vdcrpt.AppImage in a file manager or execute it from a
-   terminal.
+3. Run the AppImage.
 
 ## Resources
 
-* Downloads, info, comments - https://branchpanic.itch.io/vdcrpt
+* Downloads, info, ratings, comments - https://branchpanic.itch.io/vdcrpt
 * Source code, contributions, bug reports - https://github.com/branchpanic/vdcrpt
 * Follow @branchpanic on Twitter - https://twitter.com/branchpanic

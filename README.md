@@ -9,7 +9,8 @@ Download releases at https://branchpanic.itch.io/vdcrpt.
 *For development builds, use your IDE or the dotnet CLI. These steps are only
  necessary for producing self-contained archives.*
 
-After installing the requirements below, run `inv clean dist`.
+After installing the requirements below, run `inv clean dist` on the platform
+you want to deploy for.
 
 ### Requirements
 
@@ -20,12 +21,10 @@ After installing the requirements below, run `inv clean dist`.
 - 7z (Windows, macOS)
 - tar (Linux)
 
-### Notes and Caveats
+Other dependencies (ffmpeg, AppImage tool) will be downloaded to the temp/
+directory.
 
-- macOS builds can only be built on macOS (no Apple Silicon support yet)
-- Linux AppImage testing is minimal
-	- More support will be given if there's sizeable demand
-- Static FFmpeg builds are downloaded from:
-	- Windows: https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
-	- macOS: https://evermeet.cx/ffmpeg/get
-	- Linux: https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
+Static FFmpeg builds are downloaded from:
+- Windows: https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
+- macOS: https://evermeet.cx/ffmpeg/get
+- Linux: https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
