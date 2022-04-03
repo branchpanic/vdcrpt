@@ -82,8 +82,8 @@
                         Grid.Column="0"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
-                        Command="{Binding OnCorruptPressed}"
-                        CommandParameter="{Binding ElementName=Window}"
+                        Command="{Binding StartCorrupting}"
+                        IsEnabled="{Binding CanStartCorrupting}"
                         Background="{DynamicResource AccentButtonBackground}"
                         Margin="0 0 8 0">
                         Corrupt
