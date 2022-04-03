@@ -1,3 +1,5 @@
+# TODO: This is a mess
+
 from invoke import task
 import xml.etree.ElementTree as ET
 
@@ -47,7 +49,7 @@ def _ensure_dir():
 @task
 def clean(c):
     _ensure_dir()
-    c.run("dotnet clean")
+    c.run(f"dotnet clean -r {_get_system_runtime()}")
 
     for script_dir in (DIST_DIR, TEMP_DIR):
         path.rmdir()
@@ -85,7 +87,9 @@ def fetch_ffmpeg(c, runtime=""):
         c.run(f"7z e {archive_path} -otemp ffmpeg -r -y")
         Path("temp/ffmpeg").rename(binary_path)
     elif runtime == "linux-x64":
-        raise NotImplementedError(runtime)
+        with c.cd('temp'):
+            c.run(f"tar --strip-components=1 -xvf {archive_path.relative_to('temp')} --wildcards \"*/ffmpeg\"")
+        Path("temp/ffmpeg").rename(binary_path)
 
 
 @task(fetch_ffmpeg)
@@ -105,7 +109,7 @@ def dist(c, runtime=""):
     print(f"Building vdcrpt {version} release archive for {runtime}")
     print()
 
-    c.run(f"dotnet clean")
+    c.run(f"dotnet clean -r {runtime}")
 
     if runtime == "win-x64":
         shutil.rmtree(f"dist/vdcrpt-win-x64", ignore_errors=True)
@@ -126,10 +130,24 @@ def dist(c, runtime=""):
                             "zip", f"dist/vdcrpt-win-x64")
 
     elif runtime == "linux-x64":
-        # c.run(f'dotnet clean')
-        # c.run(f'dotnet publish ./src/Vdcrpt.Desktop -c Release -r linux-x64')
-        # shutil.rmtree(f'dist/{runtime}', ignore_errors=True)
-        raise NotImplementedError(runtime)
+        shutil.rmtree(f"dist/vdcrpt-linux-x64/vdcrpt.AppDir", ignore_errors=True)
+        shutil.copytree("resources/vdcrpt.AppDir", "dist/vdcrpt-linux-x64/vdcrpt.AppDir")
+
+        # Single file is probably unnecessary if we're building an AppImage
+        c.run(
+            f"dotnet publish ./src/Vdcrpt.Desktop -c Release -r linux-x64 -p:PublishSingleFile=false --self-contained true -o ./dist/vdcrpt-linux-x64/vdcrpt.AppDir"
+        )
+
+        shutil.copy(f"./temp/ffmpeg-linux-x64",
+                    f"dist/vdcrpt-linux-x64/vdcrpt.AppDir/ffmpeg")
+        shutil.copy(f"./LICENSE", f"dist/vdcrpt-linux-x64/LICENSE.txt")
+        shutil.copy(f"./README_USER.md", f"dist/vdcrpt-linux-x64/README.txt")
+        Path('dist/vdcrpt-linux-x64/vdcrpt.AppDir/Vdcrpt.Desktop').rename('dist/vdcrpt-linux-x64/vdcrpt.AppDir/vdcrpt')
+
+        with c.cd('dist/vdcrpt-linux-x64'):
+            # TODO: Get appimagetool
+            c.run(f"~/appimagetool-x86_64.AppImage vdcrpt.AppDir")
+
 
     elif runtime == "osx-x64":
         shutil.rmtree(f"dist/vdcrpt-osx-x64", ignore_errors=True)
