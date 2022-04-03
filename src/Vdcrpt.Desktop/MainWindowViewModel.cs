@@ -26,7 +26,6 @@ namespace Vdcrpt.Desktop
         private bool _openWhenComplete = true;
         private bool _askForFilename = true;
 
-        private DelegateCommand _onCorruptPressed;
         private DelegateCommand _onOpenResultPressed;
         private DelegateCommand _openUrl;
         public ICommand OpenUrl => _openUrl;
@@ -36,6 +35,7 @@ namespace Vdcrpt.Desktop
         private string _progressMessage = DefaultProgressMessage;
         private string _outputPath = string.Empty;
 
+        public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
         private readonly BackgroundWorker _corruptWorker;
 
         private static string GenerateOutputPath(string inputPath)
@@ -60,49 +60,6 @@ namespace Vdcrpt.Desktop
 
             _corruptWorker = new BackgroundWorker();
             _corruptWorker.WorkerReportsProgress = true;
-
-            _onCorruptPressed = new DelegateCommand(
-                _ => File.Exists(_inputPath) && !_corruptWorker.IsBusy,
-                obj =>
-                {
-                    if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
-                    {
-                        OutputPath = GenerateOutputPath(_inputPath);
-                    }
-
-                    if (AskForFilename)
-                    {
-                        // FIXME: This blocks the UI thread!
-                        var chosenPath = Task.Run(async () =>
-                        {
-                            var dialog = new SaveFileDialog
-                            {
-                                Directory = Path.GetDirectoryName(OutputPath),
-                                InitialFileName = Path.GetFileName(OutputPath),
-                                Filters =
-                                {
-                                    new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
-                                },
-                                DefaultExtension = "mp4",
-                            };
-                            return await dialog.ShowAsync((Window)obj!);
-                        }).GetAwaiter().GetResult();
-
-                        if (string.IsNullOrEmpty(chosenPath))
-                        {
-                            ProgressMessage = DefaultProgressMessage;
-                            return;
-                        }
-
-                        OutputPath = chosenPath;
-                    }
-
-                    ProgressMessage = obj?.ToString() ?? "...";
-
-                    _corruptWorker.RunWorkerAsync();
-                    OnPropertyChanged(nameof(IsBusy));
-                });
-
             _onOpenResultPressed = new DelegateCommand(
                 _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
                 _ => new Process
@@ -132,15 +89,16 @@ namespace Vdcrpt.Desktop
                 {
                     FFMpegException { Type: FFMpegExceptionType.Process } =>
                         "The video failed to render. Try again or lower the settings.",
-                    FFMpegException { Type: FFMpegExceptionType.Operation } => 
+                    FFMpegException { Type: FFMpegExceptionType.Operation } =>
                         $"A tool (FFmpeg) did not behave as expected. Try re-extracting vdcrpt if the error persists: {args.Error.Message}",
                     not null => $"An unexpected error occurred: {args.Error.Message}",
                     null => $"Done! Saved at {_outputPath}.",
                 };
 
-                _onCorruptPressed.RaiseCanExecuteChanged();
                 _onOpenResultPressed.RaiseCanExecuteChanged();
+                
                 OnPropertyChanged(nameof(IsBusy));
+                OnPropertyChanged(nameof(CanStartCorrupting));
 
                 if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
             };
@@ -155,6 +113,44 @@ namespace Vdcrpt.Desktop
                     UseShellExecute = true
                 });
             });
+        }
+
+        public async Task StartCorrupting()
+        {
+            if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
+
+            if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
+            {
+                OutputPath = GenerateOutputPath(_inputPath);
+            }
+
+            if (AskForFilename)
+            {
+                var dialog = new SaveFileDialog
+                {
+                    Directory = Path.GetDirectoryName(OutputPath),
+                    InitialFileName = Path.GetFileName(OutputPath),
+                    Filters =
+                    {
+                        new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
+                    },
+                    DefaultExtension = "mp4",
+                };
+
+                var chosenPath = await dialog.ShowAsync(app.MainWindow);
+
+                if (string.IsNullOrEmpty(chosenPath))
+                {
+                    ProgressMessage = DefaultProgressMessage;
+                    return;
+                }
+
+                OutputPath = chosenPath;
+            }
+
+            _corruptWorker.RunWorkerAsync();
+            OnPropertyChanged(nameof(IsBusy));
+            OnPropertyChanged(nameof(CanStartCorrupting));
         }
 
         public bool IsBusy => _corruptWorker.IsBusy;
@@ -183,8 +179,8 @@ namespace Vdcrpt.Desktop
                 if (value == _inputPath) return;
                 _inputPath = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(CanStartCorrupting));
 
-                _onCorruptPressed.RaiseCanExecuteChanged();
                 if (!File.Exists(_inputPath)) throw new DataValidationException("File does not exist.");
             }
         }
@@ -318,7 +314,6 @@ namespace Vdcrpt.Desktop
             }
         }
 
-        public ICommand OnCorruptPressed => _onCorruptPressed;
         public ICommand OnOpenResultPressed => _onOpenResultPressed;
 
         public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
