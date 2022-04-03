@@ -14,7 +14,9 @@
 
         <Company>branchpanic</Company>
         <Product>vdcrpt</Product>
-        <AssemblyVersion>22.04.01</AssemblyVersion>
+
+        <Version>22.04.01</Version>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
         <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
@@ -34,12 +36,10 @@
         <CFBundleName>vdcrpt</CFBundleName>
         <CFBundleDisplayName>vdcrpt</CFBundleDisplayName>
         <CFBundleIdentifier>me.branchpanic.vdcrpt</CFBundleIdentifier>
-        <CFBundleShortVersionString>0.0.0</CFBundleShortVersionString>
-        <!-- <CFBundleVersion>1.0.0</CFBundleVersion> -->
-        <!-- <CFBundlePackageType>APPL</CFBundlePackageType> -->
-        <!-- <CFBundleSignature>????</CFBundleSignature> -->
-        <!-- <CFBundleExecutable>vdcrpt</CFBundleExecutable> -->
-        <!-- <CFBundleIconFile>AppName.icns</CFBundleIconFile> -->
+        <CFBundleShortVersionString>$(Version)</CFBundleShortVersionString>
+        <CFBundleVersion>$(Version)</CFBundleVersion>
+        <CFBundleExecutable>Vdcrpt.Desktop</CFBundleExecutable>
+        <CFBundleIconFile>vdcrpt.icns</CFBundleIconFile>
         <NSPrincipalClass>NSApplication</NSPrincipalClass>
         <NSHighResolutionCapable>true</NSHighResolutionCapable>
     </PropertyGroup>
