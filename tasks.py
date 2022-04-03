@@ -1,5 +1,5 @@
 #
-# Create a deployment archive with `inv dist` on the system you want to deploy for.
+# Run `inv dist` to create an archivev on the system you want to deploy for.
 # Output will be placed in `dist/`.
 #
 # Format this file with `black` (`black tasks.py`).
