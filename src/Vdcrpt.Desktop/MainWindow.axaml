@@ -12,20 +12,22 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <MenuItem Header="Open..." Click="OnOpenPressed" IsEnabled="{Binding !IsBusy}"/>
+                <MenuItem Header="Open..." Click="OnOpenPressed" IsEnabled="{Binding !IsBusy}" />
                 <Separator></Separator>
-                <MenuItem Header="Exit" Command="{Binding OnExitPressed}"/>
+                <MenuItem Header="Exit" Command="{Binding OnExitPressed}" />
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}" CommandParameter="https://branchpanic.itch.io/vdcrpt"/>
-                <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}" CommandParameter="https://github.com/branchpanic/vdcrpt"/>
+                <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="https://branchpanic.itch.io/vdcrpt" />
+                <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="https://github.com/branchpanic/vdcrpt" />
             </MenuItem>
         </Menu>
         <StackPanel>
             <Border Background="#222">
                 <StackPanel Margin="24" Spacing="6">
                     <TextBlock FontSize="36">vdcrpt</TextBlock>
-                    <TextBlock Text="{Binding ApplicationVersion}" />
+                    <TextBlock Text="{Binding VersionText}" />
                 </StackPanel>
             </Border>
 
@@ -64,7 +66,12 @@
 
                 <StackPanel>
                     <Label>Trail Length</Label>
-                    <NumericUpDown Value="{Binding TrailLength}" Minimum="1" />
+                    <Grid ColumnDefinitions="* Auto *">
+                        <NumericUpDown Value="{Binding MinTrailLength}" Minimum="1" Grid.Column="0" Grid.ColumnSpan="{Binding MinTrailLengthColumnSpan}"/>
+                        <Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding UseTrailLengthRange}">-</Label>
+                        <NumericUpDown Grid.Column="2" Value="{Binding MaxTrailLength}" Minimum="1" IsVisible="{Binding UseTrailLengthRange}"/>
+                    </Grid>
+                    <CheckBox IsChecked="{Binding UseTrailLengthRange}">Randomize</CheckBox>
                 </StackPanel>
 
                 <StackPanel Margin="0 0 0 20">

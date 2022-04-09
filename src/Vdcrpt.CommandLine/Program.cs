@@ -50,13 +50,11 @@ namespace Vdcrpt.CommandLine
 
                 var v = Video.Load(parsedArgs.InputFile, parsedArgs.VideoCodec, parsedArgs.AudioCodec);
 
-                for (var i = 0; i < parsedArgs.Iterations; i++)
-                {
-                    v.Transform(Effects.Repeat(
-                        parsedArgs.ChunkSize,
-                        parsedArgs.MinRepetitions,
-                        parsedArgs.MaxRepetitions));
-                }
+                v.Transform(Effects.Repeat(
+                    parsedArgs.Iterations,
+                    parsedArgs.ChunkSize,
+                    parsedArgs.MinRepetitions,
+                    parsedArgs.MaxRepetitions));
 
                 v.Save(parsedArgs.OutputFile);
 

@@ -17,49 +17,36 @@ using JetBrains.Annotations;
 
 namespace Vdcrpt.Desktop
 {
+    // TODO: This should be broken into smaller components
     public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
-        private string _inputPath = string.Empty;
-        private int _trailLength = 10;
-        private int _burstSize = 5000;
-        private int _iterations = 5;
-        private bool _openWhenComplete = true;
+        private const string DefaultProgressMessage = "Ready!";
+        private readonly BackgroundWorker _corruptWorker;
         private bool _askForFilename = true;
 
-        private DelegateCommand _onOpenResultPressed;
-        private DelegateCommand _openUrl;
-        public ICommand OpenUrl => _openUrl;
+        private string _inputPath = string.Empty;
 
-        private const string DefaultProgressMessage = "Ready!";
-        private int _progressAmount;
-        private string _progressMessage = DefaultProgressMessage;
+        private Preset _currentPreset;
+        private int _burstSize = 5000;
+        private int _iterations = 5;
+        private int _minTrailLength = 10;
+        private int _maxTrailLength = 11;
+
+        // TODO: Avalonia lets us bind directly to methods, commands not always necessary
+        private DelegateCommand _onOpenResultPressed;
+        private bool _openWhenComplete = true;
         private string _outputPath = string.Empty;
 
-        public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
-        private readonly BackgroundWorker _corruptWorker;
-
-        private static string GenerateOutputPath(string inputPath)
-        {
-            var pathNoExt = Path.ChangeExtension(inputPath, null);
-            var pathTimestampNoExt = $"{pathNoExt}_vdcrpt";
-
-            string result;
-            var increment = 0;
-
-            do
-            {
-                result = Path.ChangeExtension($"{pathTimestampNoExt}_{increment++:00}", "mp4");
-            } while (File.Exists(result));
-
-            return result;
-        }
+        private int _progressAmount;
+        private string _progressMessage = DefaultProgressMessage;
 
         public MainWindowViewModel()
         {
             _currentPreset = CurrentPreset = Presets[0];
-
+            
             _corruptWorker = new BackgroundWorker();
             _corruptWorker.WorkerReportsProgress = true;
+            
             _onOpenResultPressed = new DelegateCommand(
                 _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
                 _ => new Process
@@ -90,86 +77,34 @@ namespace Vdcrpt.Desktop
                     FFMpegException { Type: FFMpegExceptionType.Process } =>
                         "The video failed to render. Try again or lower the settings.",
                     FFMpegException { Type: FFMpegExceptionType.Operation } =>
-                        $"A tool (FFmpeg) did not behave as expected. Try re-extracting vdcrpt if the error persists: {args.Error.Message}",
+                        $"FFmpeg did not behave as expected. Redownload vdcrpt or file a bug report if the error persists: {args.Error.Message}",
                     not null => $"An unexpected error occurred: {args.Error.Message}",
                     null => $"Done! Saved at {_outputPath}.",
                 };
 
                 _onOpenResultPressed.RaiseCanExecuteChanged();
-                
+
                 OnPropertyChanged(nameof(IsBusy));
                 OnPropertyChanged(nameof(CanStartCorrupting));
 
                 if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
             };
-
-            _openUrl = new DelegateCommand(url =>
-            {
-                if (url is not string urlString) return;
-
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = urlString,
-                    UseShellExecute = true
-                });
-            });
         }
 
-        public async Task StartCorrupting()
+        public ICommand OpenUrl { get; } = new DelegateCommand(url =>
         {
-            if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
+            if (url is not string urlString) return;
 
-            if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
+            Process.Start(new ProcessStartInfo
             {
-                OutputPath = GenerateOutputPath(_inputPath);
-            }
+                FileName = urlString,
+                UseShellExecute = true
+            });
+        });
 
-            if (AskForFilename)
-            {
-                var dialog = new SaveFileDialog
-                {
-                    Directory = Path.GetDirectoryName(OutputPath),
-                    InitialFileName = Path.GetFileName(OutputPath),
-                    Filters =
-                    {
-                        new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
-                    },
-                    DefaultExtension = "mp4",
-                };
-
-                var chosenPath = await dialog.ShowAsync(app.MainWindow);
-
-                if (string.IsNullOrEmpty(chosenPath))
-                {
-                    ProgressMessage = DefaultProgressMessage;
-                    return;
-                }
-
-                OutputPath = chosenPath;
-            }
-
-            _corruptWorker.RunWorkerAsync();
-            OnPropertyChanged(nameof(IsBusy));
-            OnPropertyChanged(nameof(CanStartCorrupting));
-        }
+        public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
 
         public bool IsBusy => _corruptWorker.IsBusy;
-
-        private void DoBackgroundWork(object? sender, DoWorkEventArgs args)
-        {
-            if (sender is not BackgroundWorker worker) return;
-
-            worker.ReportProgress(25, "Loading video...");
-            var video = Video.Load(_inputPath);
-
-            worker.ReportProgress(50, "Corrupting data...");
-            video.Transform(Effects.Repeat(_iterations, _burstSize, _trailLength));
-
-            worker.ReportProgress(75, "Rendering corrupted video...");
-            video.Save(_outputPath);
-
-            worker.ReportProgress(100, "Finishing up...");
-        }
 
         public string InputPath
         {
@@ -198,14 +133,50 @@ namespace Vdcrpt.Desktop
         }
 
         [Range(1, int.MaxValue)]
-        public int TrailLength
+        public int MinTrailLength
         {
-            get => _trailLength;
+            get => _minTrailLength;
             set
             {
-                if (value == _trailLength) return;
-                _trailLength = value;
+                if (value == _minTrailLength) return;
+                _minTrailLength = value;
                 OnPropertyChanged();
+
+                if (_maxTrailLength < _minTrailLength) _maxTrailLength = _minTrailLength;
+                OnPropertyChanged(nameof(MaxTrailLength));
+            }
+        }
+
+        [Range(1, int.MaxValue)]
+        public int MaxTrailLength
+        {
+            get => _maxTrailLength;
+            set
+            {
+                if (value == _maxTrailLength) return;
+                _maxTrailLength = value;
+                OnPropertyChanged();
+
+                if (_minTrailLength > _maxTrailLength) _minTrailLength = _maxTrailLength;
+                OnPropertyChanged(nameof(MinTrailLength));
+            }
+        }
+
+        private bool _useTrailLengthRange;
+        public int MinTrailLengthColumnSpan => _useTrailLengthRange ? 1 : 3;
+
+        public bool UseTrailLengthRange
+        {
+            get => _useTrailLengthRange;
+            set
+            {
+                if (value == _useTrailLengthRange) return;
+                _useTrailLengthRange = value;
+                
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(MinTrailLengthColumnSpan));
+
+                MaxTrailLength = MinTrailLength + 10;
             }
         }
 
@@ -277,27 +248,30 @@ namespace Vdcrpt.Desktop
             }
         }
 
-        public string ApplicationVersion { get; } = "Version " +
-                                                    (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3)
-                                                     ?? "<unknown>")
+        public string VersionText
+        {
+            get
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "<unknown>";
 #if DEBUG
-                                                    + " (DEBUG)"
+                version += " (DEBUG)";
 #endif
-            ;
 
-        // TODO: User presets
+                return $"Version {version}";
+            }
+        }
+
+        // TODO: User-defined presets
         public List<Preset> Presets { get; } = new()
         {
-            new Preset { Name = "Melting Chaos", BurstSize = 3000, TrailLength = 8, Iterations = 400 },
-            new Preset { Name = "Jittery", BurstSize = 20000, TrailLength = 4, Iterations = 200 },
-            new Preset { Name = "Source Engine", BurstSize = 45000, TrailLength = 5, Iterations = 60 },
-            new Preset { Name = "Subtle", BurstSize = 200, TrailLength = 2, Iterations = 60 },
-            new Preset { Name = "Many Artifacts", BurstSize = 500, TrailLength = 3, Iterations = 2000 },
-            new Preset { Name = "Trash (unstable, breaks audio)", BurstSize = 1, TrailLength = 1, Iterations = 10000 },
-            new Preset { Name = "Legacy", BurstSize = 1000, TrailLength = 50, Iterations = 50 },
+            new Preset { Name = "Melting Chaos", BurstSize = 3000, MinTrailLength = 8, Iterations = 400 },
+            new Preset { Name = "Jittery", BurstSize = 20000, MinTrailLength = 1, MaxTrailLength = 8, RandomizeTrailLength = true, Iterations = 200 },
+            new Preset { Name = "Source Engine", BurstSize = 45000, MinTrailLength = 2, MaxTrailLength = 6, RandomizeTrailLength = true, Iterations = 60 },
+            new Preset { Name = "Subtle", BurstSize = 200, MinTrailLength = 2, Iterations = 60 },
+            new Preset { Name = "Many Artifacts", BurstSize = 500, MinTrailLength = 3, Iterations = 2000 },
+            new Preset { Name = "Trash (unstable, breaks audio)", BurstSize = 1, MinTrailLength = 1, Iterations = 10000 },
+            new Preset { Name = "Legacy", BurstSize = 1000, MinTrailLength = 10, MaxTrailLength = 90, RandomizeTrailLength = true, Iterations = 50 },
         };
-
-        private Preset _currentPreset;
 
         public Preset CurrentPreset
         {
@@ -309,7 +283,11 @@ namespace Vdcrpt.Desktop
                 OnPropertyChanged();
 
                 BurstSize = _currentPreset.BurstSize;
-                TrailLength = _currentPreset.TrailLength;
+                MinTrailLength = _currentPreset.MinTrailLength;
+
+                UseTrailLengthRange = _currentPreset.RandomizeTrailLength;
+                if (_currentPreset.RandomizeTrailLength) MaxTrailLength = _currentPreset.MaxTrailLength;
+                
                 Iterations = _currentPreset.Iterations;
             }
         }
@@ -329,7 +307,75 @@ namespace Vdcrpt.Desktop
             }
         });
 
-        #region INotifyPropertyChanged
+        private static string GenerateOutputPath(string inputPath)
+        {
+            var pathNoExt = Path.ChangeExtension(inputPath, null);
+            var pathTimestampNoExt = $"{pathNoExt}_vdcrpt";
+
+            string result;
+            var increment = 0;
+
+            do
+            {
+                result = Path.ChangeExtension($"{pathTimestampNoExt}_{increment++:00}", "mp4");
+            } while (File.Exists(result));
+
+            return result;
+        }
+
+        public async Task StartCorrupting()
+        {
+            if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
+
+            if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
+            {
+                OutputPath = GenerateOutputPath(_inputPath);
+            }
+
+            if (AskForFilename)
+            {
+                var dialog = new SaveFileDialog
+                {
+                    Directory = Path.GetDirectoryName(OutputPath),
+                    InitialFileName = Path.GetFileName(OutputPath),
+                    Filters =
+                    {
+                        new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
+                    },
+                    DefaultExtension = "mp4",
+                };
+
+                var chosenPath = await dialog.ShowAsync(app.MainWindow);
+
+                if (string.IsNullOrEmpty(chosenPath))
+                {
+                    ProgressMessage = DefaultProgressMessage;
+                    return;
+                }
+
+                OutputPath = chosenPath;
+            }
+
+            _corruptWorker.RunWorkerAsync();
+            OnPropertyChanged(nameof(IsBusy));
+            OnPropertyChanged(nameof(CanStartCorrupting));
+        }
+
+        private void DoBackgroundWork(object? sender, DoWorkEventArgs args)
+        {
+            if (sender is not BackgroundWorker worker) return;
+
+            worker.ReportProgress(25, "Loading video...");
+            var video = Video.Load(_inputPath);
+
+            worker.ReportProgress(50, "Corrupting data...");
+            video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength, UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
+
+            worker.ReportProgress(75, "Rendering corrupted video...");
+            video.Save(_outputPath);
+
+            worker.ReportProgress(100, "Finishing up...");
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -338,7 +384,5 @@ namespace Vdcrpt.Desktop
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        #endregion
     }
 }

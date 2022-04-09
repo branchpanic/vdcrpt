@@ -17,11 +17,29 @@ namespace Vdcrpt
         /// times.
         /// </summary>
         /// <returns>Function that applies the specified corruption</returns>
-        public static Action<List<byte>> Repeat(int iterations, int chunkSize, int chunkRepetitions)
+        public static Action<List<byte>> Repeat(int iterations,
+            int chunkSize,
+            int minRepetitions,
+            int maxRepetitions 
+        )
         {
             return data =>
             {
                 var bytes = data.ToArray();
+                
+                var repetitions = new int[iterations];
+                if (minRepetitions == maxRepetitions)
+                {
+                    Array.Fill(repetitions, minRepetitions);
+                }
+                else
+                {
+                    for (var i = 0; i < iterations; i++)
+                    {
+                        repetitions[i] = EffectRandom.Next(minRepetitions, maxRepetitions + 1);
+                    }
+                }
+
                 var positions = new int[iterations];
                 for (var i = 0; i < iterations; i++)
                 {
@@ -30,15 +48,16 @@ namespace Vdcrpt
 
                 Array.Sort(positions);
 
-                // TODO: This is transplanted from a context where the result was being written directly to disk
                 using var stream = new MemoryStream();
                 using var writer = new BinaryWriter(stream);
 
                 var lastEnd = 0;
-                foreach (var pos in positions)
+                for (var i = 0; i < positions.Length; i++)
                 {
+                    var pos = positions[i];
                     writer.Write(bytes, lastEnd, pos - lastEnd);
-                    for (var j = 0; j < chunkRepetitions; j++)
+                    
+                    for (var j = 0; j < repetitions[i]; j++)
                     {
                         writer.Write(bytes, pos, chunkSize);
                     }
