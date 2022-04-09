@@ -7,7 +7,9 @@ using FFMpegCore.Arguments;
 
 namespace Vdcrpt
 {
-    // TODO: API cleanup post 22.04, some of this doesn't make sense anymore
+    // TODO: API cleanup post 22.04, some (most) of this doesn't make sense anymore. Most of this will get blown up
+    // and redone now that there's a better idea of how future versions of the program will work. Don't build anything
+    // new on top of this, it's very weird
     
     /// <summary>
     /// A Video contains raw AVI video data and provides methods for manipulating it. It simplifies import and export

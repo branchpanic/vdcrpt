@@ -4,19 +4,11 @@ using System.IO;
 
 namespace Vdcrpt
 {
-    /// <summary>
-    /// Effects contains miscellaneous functions that generate Actions to use with Video.ModifyBytes.
-    /// </summary>
+    // TODO: Note at top of Video.cs also applies here. Don't build anything new with this, it's going to be redone
     public static class Effects
     {
         private static readonly Random EffectRandom = new();
 
-        /// <summary>
-        /// Returns an effect that repeats one chunk of video data,
-        /// chunkLength bytes long, somewhere between minTimes and maxTimes
-        /// times.
-        /// </summary>
-        /// <returns>Function that applies the specified corruption</returns>
         public static Action<List<byte>> Repeat(int iterations,
             int chunkSize,
             int minRepetitions,

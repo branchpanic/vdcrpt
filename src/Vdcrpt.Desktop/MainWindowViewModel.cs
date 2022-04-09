@@ -21,75 +21,26 @@ namespace Vdcrpt.Desktop
     public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         private const string DefaultProgressMessage = "Ready!";
+
         private readonly BackgroundWorker _corruptWorker;
-        private bool _askForFilename = true;
 
         private string _inputPath = string.Empty;
-
         private Preset _currentPreset;
         private int _burstSize = 5000;
         private int _iterations = 5;
         private int _minTrailLength = 10;
-        private int _maxTrailLength = 11;
+        private int _maxTrailLength = 20;
 
         // TODO: Avalonia lets us bind directly to methods, commands not always necessary
         private DelegateCommand _onOpenResultPressed;
         private bool _openWhenComplete = true;
+        private bool _askForFilename = true;
         private string _outputPath = string.Empty;
 
         private int _progressAmount;
         private string _progressMessage = DefaultProgressMessage;
 
-        public MainWindowViewModel()
-        {
-            _currentPreset = CurrentPreset = Presets[0];
-            
-            _corruptWorker = new BackgroundWorker();
-            _corruptWorker.WorkerReportsProgress = true;
-            
-            _onOpenResultPressed = new DelegateCommand(
-                _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
-                _ => new Process
-                {
-                    StartInfo = new ProcessStartInfo(OutputPath)
-                    {
-                        UseShellExecute = true
-                    }
-                }.Start()
-            );
-
-            _corruptWorker.DoWork += DoBackgroundWork;
-            _corruptWorker.ProgressChanged += (_, args) =>
-            {
-                ProgressAmount = args.ProgressPercentage;
-                if (args.UserState is string state)
-                {
-                    ProgressMessage = state;
-                }
-            };
-
-            _corruptWorker.RunWorkerCompleted += (_, args) =>
-            {
-                ProgressAmount = 0;
-
-                ProgressMessage = args.Error switch
-                {
-                    FFMpegException { Type: FFMpegExceptionType.Process } =>
-                        "The video failed to render. Try again or lower the settings.",
-                    FFMpegException { Type: FFMpegExceptionType.Operation } =>
-                        $"FFmpeg did not behave as expected. Redownload vdcrpt or file a bug report if the error persists: {args.Error.Message}",
-                    not null => $"An unexpected error occurred: {args.Error.Message}",
-                    null => $"Done! Saved at {_outputPath}.",
-                };
-
-                _onOpenResultPressed.RaiseCanExecuteChanged();
-
-                OnPropertyChanged(nameof(IsBusy));
-                OnPropertyChanged(nameof(CanStartCorrupting));
-
-                if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
-            };
-        }
+        #region Properties
 
         public ICommand OpenUrl { get; } = new DelegateCommand(url =>
         {
@@ -172,11 +123,9 @@ namespace Vdcrpt.Desktop
             {
                 if (value == _useTrailLengthRange) return;
                 _useTrailLengthRange = value;
-                
+
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(MinTrailLengthColumnSpan));
-
-                MaxTrailLength = MinTrailLength + 10;
             }
         }
 
@@ -252,26 +201,20 @@ namespace Vdcrpt.Desktop
         {
             get
             {
-                var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "<unknown>";
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                var versionString = version is not null
+                    ? $"{version.Major:00}.{version.Minor:00}.{version.Build:00}"
+                    : "UNKNOWN";
 #if DEBUG
-                version += " (DEBUG)";
+                versionString += " (DEBUG)";
 #endif
 
-                return $"Version {version}";
+                return $"Version {versionString}";
             }
         }
 
         // TODO: User-defined presets
-        public List<Preset> Presets { get; } = new()
-        {
-            new Preset { Name = "Melting Chaos", BurstSize = 3000, MinTrailLength = 8, Iterations = 400 },
-            new Preset { Name = "Jittery", BurstSize = 20000, MinTrailLength = 1, MaxTrailLength = 8, RandomizeTrailLength = true, Iterations = 200 },
-            new Preset { Name = "Source Engine", BurstSize = 45000, MinTrailLength = 2, MaxTrailLength = 6, RandomizeTrailLength = true, Iterations = 60 },
-            new Preset { Name = "Subtle", BurstSize = 200, MinTrailLength = 2, Iterations = 60 },
-            new Preset { Name = "Many Artifacts", BurstSize = 500, MinTrailLength = 3, Iterations = 2000 },
-            new Preset { Name = "Trash (unstable, breaks audio)", BurstSize = 1, MinTrailLength = 1, Iterations = 10000 },
-            new Preset { Name = "Legacy", BurstSize = 1000, MinTrailLength = 10, MaxTrailLength = 90, RandomizeTrailLength = true, Iterations = 50 },
-        };
+        public List<Preset> Presets { get; } = Preset.DefaultPresets;
 
         public Preset CurrentPreset
         {
@@ -283,14 +226,17 @@ namespace Vdcrpt.Desktop
                 OnPropertyChanged();
 
                 BurstSize = _currentPreset.BurstSize;
-                MinTrailLength = _currentPreset.MinTrailLength;
+                MinTrailLength = _currentPreset.MinBurstLength;
 
-                UseTrailLengthRange = _currentPreset.RandomizeTrailLength;
-                if (_currentPreset.RandomizeTrailLength) MaxTrailLength = _currentPreset.MaxTrailLength;
-                
+                UseTrailLengthRange = _currentPreset.UseLengthRange;
+                if (_currentPreset.UseLengthRange) MaxTrailLength = _currentPreset.MaxBurstLength;
+
                 Iterations = _currentPreset.Iterations;
             }
         }
+
+        #endregion
+
 
         public ICommand OnOpenResultPressed => _onOpenResultPressed;
 
@@ -306,6 +252,57 @@ namespace Vdcrpt.Desktop
                 Environment.Exit(0);
             }
         });
+
+        public MainWindowViewModel()
+        {
+            _currentPreset = CurrentPreset = Presets[0];
+
+            _corruptWorker = new BackgroundWorker();
+            _corruptWorker.WorkerReportsProgress = true;
+
+            _onOpenResultPressed = new DelegateCommand(
+                _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
+                _ => new Process
+                {
+                    StartInfo = new ProcessStartInfo(OutputPath)
+                    {
+                        UseShellExecute = true
+                    }
+                }.Start()
+            );
+
+            _corruptWorker.DoWork += DoBackgroundWork;
+            _corruptWorker.ProgressChanged += (_, args) =>
+            {
+                ProgressAmount = args.ProgressPercentage;
+                if (args.UserState is string state)
+                {
+                    ProgressMessage = state;
+                }
+            };
+
+            _corruptWorker.RunWorkerCompleted += (_, args) =>
+            {
+                ProgressAmount = 0;
+
+                ProgressMessage = args.Error switch
+                {
+                    FFMpegException { Type: FFMpegExceptionType.Process } =>
+                        "The video failed to render. Try again or lower the settings.",
+                    FFMpegException { Type: FFMpegExceptionType.Operation } =>
+                        $"FFmpeg did not behave as expected. Redownload vdcrpt or file a bug report if the error persists: {args.Error.Message}",
+                    not null => $"An unexpected error occurred: {args.Error.Message}",
+                    null => $"Done! Saved at {_outputPath}.",
+                };
+
+                _onOpenResultPressed.RaiseCanExecuteChanged();
+
+                OnPropertyChanged(nameof(IsBusy));
+                OnPropertyChanged(nameof(CanStartCorrupting));
+
+                if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
+            };
+        }
 
         private static string GenerateOutputPath(string inputPath)
         {
@@ -369,7 +366,8 @@ namespace Vdcrpt.Desktop
             var video = Video.Load(_inputPath);
 
             worker.ReportProgress(50, "Corrupting data...");
-            video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength, UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
+            video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength,
+                UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
 
             worker.ReportProgress(75, "Rendering corrupted video...");
             video.Save(_outputPath);

@@ -65,7 +65,7 @@
                 </StackPanel>
 
                 <StackPanel>
-                    <Label>Trail Length</Label>
+                    <Label>Burst Length</Label>
                     <Grid ColumnDefinitions="* Auto *">
                         <NumericUpDown Value="{Binding MinTrailLength}" Minimum="1" Grid.Column="0" Grid.ColumnSpan="{Binding MinTrailLengthColumnSpan}"/>
                         <Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding UseTrailLengthRange}">-</Label>
