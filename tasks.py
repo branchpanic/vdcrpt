@@ -143,6 +143,7 @@ def dist(c, runtime=""):
         )
 
         shutil.copy(ffmpeg_path, dist_path / "ffmpeg.exe")
+        shutil.move(dist_path / "Vdcrpt.Desktop.exe", dist_path / "vdcrpt.exe")
 
     elif runtime == "linux-x64":
         appdir_path = TEMP / "vdcrpt.AppDir"

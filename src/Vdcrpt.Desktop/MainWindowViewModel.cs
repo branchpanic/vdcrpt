@@ -33,7 +33,7 @@ namespace Vdcrpt.Desktop
 
         // TODO: Avalonia lets us bind directly to methods, commands not always necessary
         private DelegateCommand _onOpenResultPressed;
-        private bool _openWhenComplete = true;
+        private bool _openWhenComplete = false;
         private bool _askForFilename = true;
         private string _outputPath = string.Empty;
 
