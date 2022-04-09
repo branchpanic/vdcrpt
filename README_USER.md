@@ -2,12 +2,15 @@
 
 Thank you for downloading vdcrpt!
 
-If you like the program, consider donating, sharing, and/or tagging your creations
-with #vdcrpt.
+If you like the program, consider donating, sharing, and/or tagging your
+creations with #vdcrpt.
 
-> Note: vdcrpt is optimized for short (0:10 - 1:30) videos of medium
-  resolution (about 720p). You can use longer videos, but will need to
-  increase the settings to get good results.
+Found a bug or have feedback? Open a GitHub issue or leave a comment on
+itch.io.
+
+> Note: vdcrpt is optimized for short (0:10 - 1:30) videos around 720p or 1080p.
+> You can use longer videos, but will need to increase the settings to get good
+> results.
 
 ## Instructions
 
@@ -28,6 +31,11 @@ with #vdcrpt.
 3. Select "Open" at the prompt.
 
 ### Linux
+
+> Note: The AppImage was tested on stock Ubuntu 20.04. If you find yourself
+> needing to install additional dependencies on any desktop Linux system, please
+> open an issue so the correct libraries can be pulled into the AppImage in
+> future versions.
 
 1. Extract the AppImage from this archive.
 
