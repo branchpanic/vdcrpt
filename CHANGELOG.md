@@ -17,7 +17,8 @@
 
 ### Known Issues
 
-- Custom presets are not supported
+- Custom presets are not fully supported
 - Program is difficult to use with large video files
-- Drag and drop does not work on Linux
 - File dialogs open to an inconvenient location on Linux
+- Drag and drop does not work on Linux (upstream: https://github.com/AvaloniaUI/Avalonia/issues/6085)
+- Window icon does not show on Linux (upstream: https://github.com/AvaloniaUI/Avalonia/issues/5329)
