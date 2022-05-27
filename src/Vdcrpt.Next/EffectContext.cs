@@ -32,6 +32,11 @@ public class EffectContext
     /// </summary>
     public (string path, bool exists) GetCachedFile(string key, string extension = "")
     {
+        if (string.IsNullOrEmpty(key))
+        {
+            throw new ArgumentException("Cache key must not be null or empty", nameof(key));
+        }
+
         return GetCachedFileInternal(CacheUtility.SanitizeFileName(key), extension);
     }
 
@@ -45,7 +50,21 @@ public class EffectContext
     /// </summary>
     public (string path, bool exists) GetCachedFile(string[] keys, string extension = "")
     {
-        var compoundKey = Path.Combine(keys.Select(k => CacheUtility.SanitizeFileName(k)).ToArray());
+        if (keys == null)
+        {
+            throw new ArgumentNullException(nameof(keys));
+        }
+
+        var compoundKey = Path.Combine(keys.Select(k =>
+        {
+            if (string.IsNullOrEmpty(k))
+            {
+                throw new ArgumentException("Cache key component must not be null or empty");
+            }
+
+            return CacheUtility.SanitizeFileName(k);
+        }).ToArray());
+
         return GetCachedFileInternal(compoundKey, extension);
     }
 

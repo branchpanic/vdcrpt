@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.CommandLine", "src\V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next", "src\Vdcrpt.Next\Vdcrpt.Next.csproj", "{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5709C1DB-2704-4CE2-94EA-7E9D2B183B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next.Tests", "tests\Vdcrpt.Next.Tests\Vdcrpt.Next.Tests.csproj", "{8E93B738-2B6C-431C-89A0-180F30126F4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,7 +76,20 @@ Global
 		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x64.Build.0 = Release|Any CPU
 		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x86.ActiveCfg = Release|Any CPU
 		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x86.Build.0 = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Debug|x86.Build.0 = Debug|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x64.Build.0 = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x86.ActiveCfg = Release|Any CPU
+		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8E93B738-2B6C-431C-89A0-180F30126F4E} = {5709C1DB-2704-4CE2-94EA-7E9D2B183B93}
 	EndGlobalSection
 EndGlobal
