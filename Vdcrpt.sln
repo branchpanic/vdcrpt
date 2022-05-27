@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Desktop", "src\Vdcrp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.CommandLine", "src\Vdcrpt.CommandLine\Vdcrpt.CommandLine.csproj", "{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next", "src\Vdcrpt.Next\Vdcrpt.Next.csproj", "{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,19 @@ Global
 		{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}.Release|x64.Build.0 = Release|Any CPU
 		{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}.Release|x86.ActiveCfg = Release|Any CPU
 		{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}.Release|x86.Build.0 = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|x64.Build.0 = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Debug|x86.Build.0 = Debug|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x64.ActiveCfg = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x64.Build.0 = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x86.ActiveCfg = Release|Any CPU
+		{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

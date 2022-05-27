@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Vdcrpt.Next\Vdcrpt.Next.csproj" />
       <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
     </ItemGroup>
 

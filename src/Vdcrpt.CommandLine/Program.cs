@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using CommandLine;
+using Vdcrpt.Next;
+using Vdcrpt.Next.Effects;
 
 namespace Vdcrpt.CommandLine
 {
@@ -39,27 +41,34 @@ namespace Vdcrpt.CommandLine
     {
         public static int Main(string[] args)
         {
-            return Parser.Default.ParseArguments<Args>(args).MapResult(parsedArgs =>
-            {
-                if (!parsedArgs.Overwrite && File.Exists(parsedArgs.OutputFile))
-                {
-                    Console.Error.WriteLine(
-                        $"Output file {parsedArgs.OutputFile} already exists (use -o to overwrite)");
-                    return 1;
-                }
-
-                var v = Video.Load(parsedArgs.InputFile, parsedArgs.VideoCodec, parsedArgs.AudioCodec);
-
-                v.Transform(Effects.Repeat(
-                    parsedArgs.Iterations,
-                    parsedArgs.ChunkSize,
-                    parsedArgs.MinRepetitions,
-                    parsedArgs.MaxRepetitions));
-
-                v.Save(parsedArgs.OutputFile);
-
-                return 0;
-            }, _ => -1);
+            return Parser.Default.ParseArguments<Args>(args).MapResult(Run, _ => -1);
         }
+
+        private static int Run(Args args)
+        {
+            if (!args.Overwrite && File.Exists(args.OutputFile))
+            {
+                Console.Error.WriteLine($"Output file {args.OutputFile} already exists (use -o to overwrite)");
+                return 1;
+            }
+
+            // var v = Video.Load(args.InputFile, args.VideoCodec, args.AudioCodec);
+            //
+            // v.Transform(Effects.Repeat(args.Iterations, args.ChunkSize, args.MinRepetitions, args.MaxRepetitions));
+            //
+            // v.Save(args.OutputFile);
+
+            var effect = new BinaryRepeatEffect
+            {
+                Iterations = args.Iterations,
+                BurstSize = args.ChunkSize,
+                MaxBurstLength = args.MaxRepetitions,
+                MinBurstLength = args.MinRepetitions
+            };
+            
+            Session.ApplyEffects(args.InputFile, args.OutputFile, effect);
+
+            return 0;
+    }
     }
 }
