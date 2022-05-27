@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using FFMpegCore;
 using FFMpegCore.Arguments;
 
@@ -9,7 +8,6 @@ namespace Vdcrpt.Next;
 /// </summary>
 public class Session : IDisposable
 {
-    private readonly string _inputKey;
     private readonly string _initialFile;
 
     private readonly string _scratchRoot; // Deleted when session is disposed.
@@ -23,17 +21,10 @@ public class Session : IDisposable
         _effects = new List<IEffect>();
         _initialFile = initialFile;
 
-        using (var stream = File.OpenRead(initialFile))
-        {
-            using (var md5 = MD5.Create())
-            {
-                var hash = md5.ComputeHash(stream);
-                _inputKey = BitConverter.ToString(hash);
-            }
-        }
+        _cacheRoot = Path.Join(tempDir, "cache");
 
-        _cacheRoot = Path.Join(tempDir, _inputKey, "cache");
-        _scratchRoot = Path.Join(tempDir, _inputKey, "scratch-" + Guid.NewGuid());
+        var inputKey = CacheUtility.GetKeyFromFile(initialFile);
+        _scratchRoot = Path.Join(tempDir, $"scratch-{inputKey}-{Guid.NewGuid()}");
 
         Directory.CreateDirectory(_cacheRoot);
         Directory.CreateDirectory(_scratchRoot);
@@ -41,17 +32,18 @@ public class Session : IDisposable
 
     public Session Apply(IEffect effect)
     {
+        // NOTE: Deferred to Render. This could eventually do more work in the background, i.e. incremental rendering-
+        //       but we'll do that when we need it.
         _effects.Add(effect);
         return this;
     }
 
     private EffectContext CreateContext(string effectKey)
     {
-        return new EffectContext
-        {
-            CacheDir = Path.Join(_cacheRoot, effectKey),
-            ScratchDir = Path.Join(_scratchRoot, effectKey + "-" + Guid.NewGuid())
-        };
+        return new EffectContext(
+            cacheDir: Path.Join(_cacheRoot, effectKey),
+            scratchDir: Path.Join(_scratchRoot, effectKey + "-" + Guid.NewGuid())
+        );
     }
 
     public void Render(string output) =>
@@ -61,7 +53,7 @@ public class Session : IDisposable
                 .WithVideoCodec("libx264")
                 .WithAudioCodec("aac")
         );
-    
+
     public void Render(string output, Action<FFMpegArgumentOptions> buildOutputArgs)
     {
         var prev = _initialFile;
@@ -72,6 +64,12 @@ public class Session : IDisposable
             var effect = _effects[i];
             current = Path.Join(_cacheRoot, $"render-{i:0000}");
             effect.Apply(CreateContext(effect.GetType().ToString()), prev, current);
+
+            if (!File.Exists(current))
+            {
+                throw new InvalidOperationException($"Effect {effect} ({effect.GetType()}) did not produce output.");
+            }
+
             prev = current;
         }
 
@@ -79,12 +77,17 @@ public class Session : IDisposable
             .FromFileInput(current)
             .WithGlobalOptions(args => args.WithVerbosityLevel(VerbosityLevel.Fatal))
             .OutputToFile(output, true, buildOutputArgs)
-            .ProcessSynchronously();
+            .ProcessSynchronously();  // TODO: Async option if needed.
+    }
+
+    public void DeleteCache()
+    {
+        Directory.Delete(_cacheRoot, true);
+        Directory.CreateDirectory(_cacheRoot);
     }
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         Directory.Delete(_scratchRoot, true);
     }
 
@@ -97,12 +100,12 @@ public class Session : IDisposable
     public static void ApplyEffects(string inputPath, string outputPath, params IEffect[] effects)
     {
         using var session = new Session(inputPath);
-        
+
         foreach (var effect in effects)
         {
             session.Apply(effect);
         }
-        
+
         session.Render(outputPath);
     }
 }

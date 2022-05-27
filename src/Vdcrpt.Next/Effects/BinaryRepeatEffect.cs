@@ -1,5 +1,3 @@
-using FFMpegCore;
-
 namespace Vdcrpt.Next.Effects;
 
 /// <summary>
@@ -22,18 +20,7 @@ public class BinaryRepeatEffect : IEffect
 
     public void Apply(EffectContext context, string inputPath, string outputPath)
     {
-        var (aviPath, exists) = context.GetCachedFile("main", "avi");
-        if (!exists)
-        {
-            FFMpegArguments
-                .FromFileInput(inputPath)
-                .OutputToFile(aviPath, true, args => args
-                    .WithVideoCodec("mpeg4")
-                    .WithAudioCodec("pcm_mulaw")
-                    .ForceFormat("avi"))
-                .ProcessSynchronously();
-        }
-
+        var aviPath = context.ConvertCached(inputPath, "mpeg4", "pcm_mulaw", "avi");
         var data = File.ReadAllBytes(inputPath);
 
         var repetitions = new int[Iterations];
