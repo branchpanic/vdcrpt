@@ -3,6 +3,7 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+        <LangVersion>default</LangVersion>
 
         <DebugType>None</DebugType>
         <DebugSymbols>False</DebugSymbols>
@@ -10,6 +11,7 @@
         <PublishReadyToRun>false</PublishReadyToRun>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport> 
         <Nullable>enable</Nullable>
 
         <Company>branchpanic</Company>
@@ -19,19 +21,30 @@
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
+    
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.13" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.13" />
+        <PackageReference Include="Avalonia" Version="0.10.15" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.15" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15" />
 
         <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
     </ItemGroup>
+    
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+    
     <PropertyGroup>
         <CFBundleName>vdcrpt</CFBundleName>
         <CFBundleDisplayName>vdcrpt</CFBundleDisplayName>

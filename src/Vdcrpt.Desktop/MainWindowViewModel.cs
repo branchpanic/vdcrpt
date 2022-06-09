@@ -15,372 +15,371 @@ using Avalonia.Data;
 using FFMpegCore.Exceptions;
 using JetBrains.Annotations;
 
-namespace Vdcrpt.Desktop
+namespace Vdcrpt.Desktop;
+
+// TODO: This should be broken into smaller components
+public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
-    // TODO: This should be broken into smaller components
-    public sealed class MainWindowViewModel : INotifyPropertyChanged
+    private const string DefaultProgressMessage = "Ready!";
+
+    private readonly BackgroundWorker _corruptWorker;
+
+    private string _inputPath = string.Empty;
+    private Preset _currentPreset;
+    private int _burstSize = 5000;
+    private int _iterations = 5;
+    private int _minTrailLength = 10;
+    private int _maxTrailLength = 20;
+
+    // TODO: Avalonia lets us bind directly to methods, commands not always necessary
+    private DelegateCommand _onOpenResultPressed;
+    private bool _openWhenComplete = false;
+    private bool _askForFilename = true;
+    private string _outputPath = string.Empty;
+
+    private int _progressAmount;
+    private string _progressMessage = DefaultProgressMessage;
+
+    #region Properties
+
+    public ICommand OpenUrl { get; } = new DelegateCommand(url =>
     {
-        private const string DefaultProgressMessage = "Ready!";
+        if (url is not string urlString) return;
 
-        private readonly BackgroundWorker _corruptWorker;
-
-        private string _inputPath = string.Empty;
-        private Preset _currentPreset;
-        private int _burstSize = 5000;
-        private int _iterations = 5;
-        private int _minTrailLength = 10;
-        private int _maxTrailLength = 20;
-
-        // TODO: Avalonia lets us bind directly to methods, commands not always necessary
-        private DelegateCommand _onOpenResultPressed;
-        private bool _openWhenComplete = false;
-        private bool _askForFilename = true;
-        private string _outputPath = string.Empty;
-
-        private int _progressAmount;
-        private string _progressMessage = DefaultProgressMessage;
-
-        #region Properties
-
-        public ICommand OpenUrl { get; } = new DelegateCommand(url =>
+        Process.Start(new ProcessStartInfo
         {
-            if (url is not string urlString) return;
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = urlString,
-                UseShellExecute = true
-            });
+            FileName = urlString,
+            UseShellExecute = true
         });
+    });
 
-        public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
+    public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
 
-        public bool IsBusy => _corruptWorker.IsBusy;
+    public bool IsBusy => _corruptWorker.IsBusy;
 
-        public string InputPath
+    public string InputPath
+    {
+        get => _inputPath;
+        set
         {
-            get => _inputPath;
-            set
-            {
-                if (value == _inputPath) return;
-                _inputPath = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(CanStartCorrupting));
+            if (value == _inputPath) return;
+            _inputPath = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanStartCorrupting));
 
-                if (!File.Exists(_inputPath)) throw new DataValidationException("File does not exist.");
-            }
+            if (!File.Exists(_inputPath)) throw new DataValidationException("File does not exist.");
         }
+    }
 
-        [Range(1, int.MaxValue)]
-        public int BurstSize
+    [Range(1, int.MaxValue)]
+    public int BurstSize
+    {
+        get => _burstSize;
+        set
         {
-            get => _burstSize;
-            set
-            {
-                if (value == _burstSize) return;
-                _burstSize = value;
-                OnPropertyChanged();
-            }
+            if (value == _burstSize) return;
+            _burstSize = value;
+            OnPropertyChanged();
         }
+    }
 
-        [Range(1, int.MaxValue)]
-        public int MinTrailLength
+    [Range(1, int.MaxValue)]
+    public int MinTrailLength
+    {
+        get => _minTrailLength;
+        set
         {
-            get => _minTrailLength;
-            set
-            {
-                if (value == _minTrailLength) return;
-                _minTrailLength = value;
-                OnPropertyChanged();
+            if (value == _minTrailLength) return;
+            _minTrailLength = value;
+            OnPropertyChanged();
 
-                if (_maxTrailLength < _minTrailLength) _maxTrailLength = _minTrailLength;
-                OnPropertyChanged(nameof(MaxTrailLength));
-            }
+            if (_maxTrailLength < _minTrailLength) _maxTrailLength = _minTrailLength;
+            OnPropertyChanged(nameof(MaxTrailLength));
         }
+    }
 
-        [Range(1, int.MaxValue)]
-        public int MaxTrailLength
+    [Range(1, int.MaxValue)]
+    public int MaxTrailLength
+    {
+        get => _maxTrailLength;
+        set
         {
-            get => _maxTrailLength;
-            set
-            {
-                if (value == _maxTrailLength) return;
-                _maxTrailLength = value;
-                OnPropertyChanged();
+            if (value == _maxTrailLength) return;
+            _maxTrailLength = value;
+            OnPropertyChanged();
 
-                if (_minTrailLength > _maxTrailLength) _minTrailLength = _maxTrailLength;
-                OnPropertyChanged(nameof(MinTrailLength));
-            }
+            if (_minTrailLength > _maxTrailLength) _minTrailLength = _maxTrailLength;
+            OnPropertyChanged(nameof(MinTrailLength));
         }
+    }
 
-        private bool _useTrailLengthRange;
-        public int MinTrailLengthColumnSpan => _useTrailLengthRange ? 1 : 3;
+    private bool _useTrailLengthRange;
+    public int MinTrailLengthColumnSpan => _useTrailLengthRange ? 1 : 3;
 
-        public bool UseTrailLengthRange
+    public bool UseTrailLengthRange
+    {
+        get => _useTrailLengthRange;
+        set
         {
-            get => _useTrailLengthRange;
-            set
-            {
-                if (value == _useTrailLengthRange) return;
-                _useTrailLengthRange = value;
+            if (value == _useTrailLengthRange) return;
+            _useTrailLengthRange = value;
 
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(MinTrailLengthColumnSpan));
-            }
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(MinTrailLengthColumnSpan));
         }
+    }
 
-        [Range(1, int.MaxValue)]
-        public int Iterations
+    [Range(1, int.MaxValue)]
+    public int Iterations
+    {
+        get => _iterations;
+        set
         {
-            get => _iterations;
-            set
-            {
-                if (value == _iterations) return;
-                _iterations = value;
-                OnPropertyChanged();
-            }
+            if (value == _iterations) return;
+            _iterations = value;
+            OnPropertyChanged();
         }
+    }
 
-        public bool OpenWhenComplete
+    public bool OpenWhenComplete
+    {
+        get => _openWhenComplete;
+        set
         {
-            get => _openWhenComplete;
-            set
-            {
-                if (value == _openWhenComplete) return;
-                _openWhenComplete = value;
-                OnPropertyChanged();
-            }
+            if (value == _openWhenComplete) return;
+            _openWhenComplete = value;
+            OnPropertyChanged();
         }
+    }
 
-        public bool AskForFilename
+    public bool AskForFilename
+    {
+        get => _askForFilename;
+        set
         {
-            get => _askForFilename;
-            set
-            {
-                if (value == _askForFilename) return;
-                _askForFilename = value;
-                OnPropertyChanged();
-            }
+            if (value == _askForFilename) return;
+            _askForFilename = value;
+            OnPropertyChanged();
         }
+    }
 
-        public int ProgressAmount
+    public int ProgressAmount
+    {
+        get => _progressAmount;
+        set
         {
-            get => _progressAmount;
-            set
-            {
-                if (value == _progressAmount) return;
-                _progressAmount = value;
-                OnPropertyChanged();
-            }
+            if (value == _progressAmount) return;
+            _progressAmount = value;
+            OnPropertyChanged();
         }
+    }
 
-        public string ProgressMessage
+    public string ProgressMessage
+    {
+        get => _progressMessage;
+        set
         {
-            get => _progressMessage;
-            set
-            {
-                if (value == _progressMessage) return;
-                _progressMessage = value;
-                OnPropertyChanged();
-            }
+            if (value == _progressMessage) return;
+            _progressMessage = value;
+            OnPropertyChanged();
         }
+    }
 
-        public string OutputPath
+    public string OutputPath
+    {
+        get => _outputPath;
+        set
         {
-            get => _outputPath;
-            set
-            {
-                if (value == _outputPath) return;
-                _outputPath = value;
-                OnPropertyChanged();
-                _onOpenResultPressed.RaiseCanExecuteChanged();
-            }
+            if (value == _outputPath) return;
+            _outputPath = value;
+            OnPropertyChanged();
+            _onOpenResultPressed.RaiseCanExecuteChanged();
         }
+    }
 
-        public string VersionText
+    public string VersionText
+    {
+        get
         {
-            get
-            {
-                var version = Assembly.GetExecutingAssembly().GetName().Version;
-                var versionString = version is not null
-                    ? $"{version.Major:00}.{version.Minor:00}.{version.Build:00}"
-                    : "UNKNOWN";
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var versionString = version is not null
+                ? $"{version.Major:00}.{version.Minor:00}.{version.Build:00}"
+                : "UNKNOWN";
 #if DEBUG
-                versionString += " (DEBUG)";
+            versionString += " (DEBUG)";
 #endif
 
-                return $"Version {versionString}";
-            }
+            return $"Version {versionString}";
         }
+    }
 
-        // TODO: User-defined presets
-        public List<Preset> Presets { get; } = Preset.DefaultPresets;
+    // TODO: User-defined presets
+    public List<Preset> Presets { get; } = Preset.DefaultPresets;
 
-        public Preset CurrentPreset
+    public Preset CurrentPreset
+    {
+        get => _currentPreset;
+        set
         {
-            get => _currentPreset;
-            set
-            {
-                if (value == _currentPreset) return;
-                _currentPreset = value;
-                OnPropertyChanged();
+            if (value == _currentPreset) return;
+            _currentPreset = value;
+            OnPropertyChanged();
 
-                BurstSize = _currentPreset.BurstSize;
-                MinTrailLength = _currentPreset.MinBurstLength;
+            BurstSize = _currentPreset.BurstSize;
+            MinTrailLength = _currentPreset.MinBurstLength;
 
-                UseTrailLengthRange = _currentPreset.UseLengthRange;
-                if (_currentPreset.UseLengthRange) MaxTrailLength = _currentPreset.MaxBurstLength;
+            UseTrailLengthRange = _currentPreset.UseLengthRange;
+            if (_currentPreset.UseLengthRange) MaxTrailLength = _currentPreset.MaxBurstLength;
 
-                Iterations = _currentPreset.Iterations;
-            }
+            Iterations = _currentPreset.Iterations;
         }
+    }
 
-        #endregion
+    #endregion
 
 
-        public ICommand OnOpenResultPressed => _onOpenResultPressed;
+    public ICommand OnOpenResultPressed => _onOpenResultPressed;
 
-        public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
+    public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
+    {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown();
-            }
-            else
-            {
-                // Not sure what's best to do here, but we shouldn't ever reach this branch anyway.
-                Environment.Exit(0);
-            }
-        });
-
-        public MainWindowViewModel()
+            desktop.Shutdown();
+        }
+        else
         {
-            _currentPreset = CurrentPreset = Presets[0];
+            // Not sure what's best to do here, but we shouldn't ever reach this branch anyway.
+            Environment.Exit(0);
+        }
+    });
 
-            _corruptWorker = new BackgroundWorker();
-            _corruptWorker.WorkerReportsProgress = true;
+    public MainWindowViewModel()
+    {
+        _currentPreset = CurrentPreset = Presets[0];
 
-            _onOpenResultPressed = new DelegateCommand(
-                _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
-                _ => new Process
-                {
-                    StartInfo = new ProcessStartInfo(OutputPath)
-                    {
-                        UseShellExecute = true
-                    }
-                }.Start()
-            );
+        _corruptWorker = new BackgroundWorker();
+        _corruptWorker.WorkerReportsProgress = true;
 
-            _corruptWorker.DoWork += DoBackgroundWork;
-            _corruptWorker.ProgressChanged += (_, args) =>
+        _onOpenResultPressed = new DelegateCommand(
+            _ => File.Exists(_outputPath) && !_corruptWorker.IsBusy,
+            _ => new Process
             {
-                ProgressAmount = args.ProgressPercentage;
-                if (args.UserState is string state)
+                StartInfo = new ProcessStartInfo(OutputPath)
                 {
-                    ProgressMessage = state;
+                    UseShellExecute = true
                 }
+            }.Start()
+        );
+
+        _corruptWorker.DoWork += DoBackgroundWork;
+        _corruptWorker.ProgressChanged += (_, args) =>
+        {
+            ProgressAmount = args.ProgressPercentage;
+            if (args.UserState is string state)
+            {
+                ProgressMessage = state;
+            }
+        };
+
+        _corruptWorker.RunWorkerCompleted += (_, args) =>
+        {
+            ProgressAmount = 0;
+
+            ProgressMessage = args.Error switch
+            {
+                FFMpegException { Type: FFMpegExceptionType.Process } =>
+                    "The video failed to render. Try again or lower the settings.",
+                FFMpegException { Type: FFMpegExceptionType.Operation } =>
+                    $"FFmpeg did not behave as expected. Redownload vdcrpt or file a bug report if the error persists: {args.Error.Message}",
+                not null => $"An unexpected error occurred: {args.Error.Message}",
+                null => $"Done! Saved at {_outputPath}.",
             };
 
-            _corruptWorker.RunWorkerCompleted += (_, args) =>
-            {
-                ProgressAmount = 0;
+            _onOpenResultPressed.RaiseCanExecuteChanged();
 
-                ProgressMessage = args.Error switch
-                {
-                    FFMpegException { Type: FFMpegExceptionType.Process } =>
-                        "The video failed to render. Try again or lower the settings.",
-                    FFMpegException { Type: FFMpegExceptionType.Operation } =>
-                        $"FFmpeg did not behave as expected. Redownload vdcrpt or file a bug report if the error persists: {args.Error.Message}",
-                    not null => $"An unexpected error occurred: {args.Error.Message}",
-                    null => $"Done! Saved at {_outputPath}.",
-                };
-
-                _onOpenResultPressed.RaiseCanExecuteChanged();
-
-                OnPropertyChanged(nameof(IsBusy));
-                OnPropertyChanged(nameof(CanStartCorrupting));
-
-                if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
-            };
-        }
-
-        private static string GenerateOutputPath(string inputPath)
-        {
-            var pathNoExt = Path.ChangeExtension(inputPath, null);
-            var pathTimestampNoExt = $"{pathNoExt}_vdcrpt";
-
-            string result;
-            var increment = 0;
-
-            do
-            {
-                result = Path.ChangeExtension($"{pathTimestampNoExt}_{increment++:00}", "mp4");
-            } while (File.Exists(result));
-
-            return result;
-        }
-
-        public async Task StartCorrupting()
-        {
-            if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
-
-            if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
-            {
-                OutputPath = GenerateOutputPath(_inputPath);
-            }
-
-            if (AskForFilename)
-            {
-                var dialog = new SaveFileDialog
-                {
-                    Directory = Path.GetDirectoryName(OutputPath),
-                    InitialFileName = Path.GetFileName(OutputPath),
-                    Filters =
-                    {
-                        new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
-                    },
-                    DefaultExtension = "mp4",
-                };
-
-                var chosenPath = await dialog.ShowAsync(app.MainWindow);
-
-                if (string.IsNullOrEmpty(chosenPath))
-                {
-                    ProgressMessage = DefaultProgressMessage;
-                    return;
-                }
-
-                OutputPath = chosenPath;
-            }
-
-            _corruptWorker.RunWorkerAsync();
             OnPropertyChanged(nameof(IsBusy));
             OnPropertyChanged(nameof(CanStartCorrupting));
-        }
 
-        private void DoBackgroundWork(object? sender, DoWorkEventArgs args)
+            if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
+        };
+    }
+
+    private static string GenerateOutputPath(string inputPath)
+    {
+        var pathNoExt = Path.ChangeExtension(inputPath, null);
+        var pathTimestampNoExt = $"{pathNoExt}_vdcrpt";
+
+        string result;
+        var increment = 0;
+
+        do
         {
-            if (sender is not BackgroundWorker worker) return;
+            result = Path.ChangeExtension($"{pathTimestampNoExt}_{increment++:00}", "mp4");
+        } while (File.Exists(result));
 
-            worker.ReportProgress(25, "Loading video...");
-            var video = Video.Load(_inputPath);
+        return result;
+    }
 
-            worker.ReportProgress(50, "Corrupting data...");
-            video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength,
-                UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
+    public async Task StartCorrupting()
+    {
+        if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
 
-            worker.ReportProgress(75, "Rendering corrupted video...");
-            video.Save(_outputPath);
-
-            worker.ReportProgress(100, "Finishing up...");
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            OutputPath = GenerateOutputPath(_inputPath);
         }
+
+        if (AskForFilename)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Directory = Path.GetDirectoryName(OutputPath),
+                InitialFileName = Path.GetFileName(OutputPath),
+                Filters =
+                {
+                    new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
+                },
+                DefaultExtension = "mp4",
+            };
+
+            var chosenPath = await dialog.ShowAsync(app.MainWindow);
+
+            if (string.IsNullOrEmpty(chosenPath))
+            {
+                ProgressMessage = DefaultProgressMessage;
+                return;
+            }
+
+            OutputPath = chosenPath;
+        }
+
+        _corruptWorker.RunWorkerAsync();
+        OnPropertyChanged(nameof(IsBusy));
+        OnPropertyChanged(nameof(CanStartCorrupting));
+    }
+
+    private void DoBackgroundWork(object? sender, DoWorkEventArgs args)
+    {
+        if (sender is not BackgroundWorker worker) return;
+
+        worker.ReportProgress(25, "Loading video...");
+        var video = Video.Load(_inputPath);
+
+        worker.ReportProgress(50, "Corrupting data...");
+        video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength,
+            UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
+
+        worker.ReportProgress(75, "Rendering corrupted video...");
+        video.Save(_outputPath);
+
+        worker.ReportProgress(100, "Finishing up...");
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    [NotifyPropertyChangedInvocator]
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
