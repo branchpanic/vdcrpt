@@ -2,13 +2,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:v="clr-namespace:Vdcrpt.Desktop"
         mc:Ignorable="d"
-        Width="680" Height="880"
-        MinWidth="350" MinHeight="840"
+        Width="600" Height="800"
+        MinWidth="350" MinHeight="500"
         x:Class="Vdcrpt.Desktop.MainWindow"
         x:Name="Window"
         Icon="/Assets/Icon.ico"
         Title="vdcrpt">
+	<Window.Styles>
+		<Style Selector="StackPanel.FieldGroup">
+			<Setter Property="Spacing" Value="8"/>
+		</Style>
+	</Window.Styles>
+	
+	<Design.DataContext>
+        <v:MainWindowViewModel/>
+    </Design.DataContext>
+	
     <NativeMenu.Menu>
         <NativeMenu>
             <NativeMenuItem Header="File">
@@ -28,86 +39,91 @@
             </NativeMenuItem>
         </NativeMenu>
     </NativeMenu.Menu>
-    <StackPanel>
-        <Border Background="#222">
-            <StackPanel Margin="24" Spacing="6">
-                <TextBlock FontSize="36">vdcrpt</TextBlock>
-                <TextBlock Text="{Binding VersionText}" />
-            </StackPanel>
-        </Border>
 
-        <StackPanel Spacing="16" Margin="16" MaxWidth="550" IsEnabled="{Binding !IsBusy}">
-            <StackPanel Margin="0 20 0 0">
-                <Label>Video</Label>
-                <Grid ColumnDefinitions="Auto *">
-                    <Button Click="OnOpenPressed" Grid.Column="0" Margin="0 0 8 0" VerticalAlignment="Top">Open...</Button>
-                    <TextBox
-                        Grid.Column="1"
-                        DragDrop.AllowDrop="True"
-                        VerticalAlignment="Top"
+	<ScrollViewer>
+		<StackPanel>
+            <Border Background="#222" Margin="0 0 0 16">
+                <StackPanel Margin="24" Spacing="4">
+                    <TextBlock FontSize="24">vdcrpt</TextBlock>
+                    <TextBlock Text="{Binding VersionText}" />
+                </StackPanel>
+            </Border>
 
-                        Name="InputPathTextBox"
-                        Text="{Binding InputPath}"
-                        Watermark="Open or drop a video file here" />
+            <StackPanel Spacing="20" Margin="16" MaxWidth="500" IsEnabled="{Binding !IsBusy}">
+                <StackPanel>
+                    <Label>Video</Label>
+                    <Grid ColumnDefinitions="Auto *">
+                        <Button Click="OnOpenPressed" Grid.Column="0" Margin="0 0 8 0" VerticalAlignment="Top">Open...</Button>
+                        <TextBox
+                            Grid.Column="1"
+                            DragDrop.AllowDrop="True"
+                            VerticalAlignment="Top"
+
+                            Name="InputPathTextBox"
+                            Text="{Binding InputPath}"
+                            Watermark="Open or drop a video file here" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel>
+                    <Label>Preset</Label>
+                    <ComboBox Items="{Binding Presets}" SelectedItem="{Binding CurrentPreset}" SelectedIndex="0"
+                              HorizontalAlignment="Stretch">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+			    <StackPanel Classes="FieldGroup">
+				    <StackPanel>
+					    <Label>Burst Size</Label>
+					    <NumericUpDown Value="{Binding BurstSize}" Minimum="1" />
+				    </StackPanel>
+
+				    <StackPanel>
+					    <Label>Burst Length</Label>
+					    <Grid ColumnDefinitions="* Auto *">
+						    <NumericUpDown Value="{Binding MinTrailLength}" Minimum="1" Grid.Column="0"
+									       Grid.ColumnSpan="{Binding MinTrailLengthColumnSpan}" />
+						    <Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding UseTrailLengthRange}">-</Label>
+						    <NumericUpDown Grid.Column="2" Value="{Binding MaxTrailLength}" Minimum="1"
+									       IsVisible="{Binding UseTrailLengthRange}" />
+					    </Grid>
+					    <CheckBox IsChecked="{Binding UseTrailLengthRange}">Randomize</CheckBox>
+				    </StackPanel>
+
+				    <StackPanel>
+					    <Label>Iterations</Label>
+					    <NumericUpDown Value="{Binding Iterations}" Minimum="1" />
+				    </StackPanel>
+			    </StackPanel>
+
+                <StackPanel>
+                    <CheckBox IsChecked="{Binding OpenWhenComplete}">Open video when done</CheckBox>
+                    <CheckBox IsChecked="{Binding AskForFilename}">Ask where to save every time</CheckBox>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="* Auto">
+                    <Button
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Command="{Binding StartCorrupting}"
+                        IsEnabled="{Binding CanStartCorrupting}"
+                        Background="{DynamicResource AccentButtonBackground}"
+                        Margin="0 0 8 0">
+                        Corrupt
+                    </Button>
+                    <Button Grid.Column="1" Command="{Binding OnOpenResultPressed}">Open Result</Button>
                 </Grid>
+
+                <ProgressBar IsIndeterminate="False" Value="{Binding ProgressAmount}" />
+                <TextBlock Text="{Binding ProgressMessage}" TextWrapping="Wrap" />
+
             </StackPanel>
-
-            <StackPanel Margin="0 20 0 0">
-                <Label>Preset</Label>
-                <ComboBox Items="{Binding Presets}" SelectedItem="{Binding CurrentPreset}" SelectedIndex="0"
-                          HorizontalAlignment="Stretch">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </StackPanel>
-
-            <StackPanel Margin="0 20 0 0">
-                <Label>Burst Size</Label>
-                <NumericUpDown Value="{Binding BurstSize}" Minimum="1" />
-            </StackPanel>
-
-            <StackPanel>
-                <Label>Burst Length</Label>
-                <Grid ColumnDefinitions="* Auto *">
-                    <NumericUpDown Value="{Binding MinTrailLength}" Minimum="1" Grid.Column="0"
-                                   Grid.ColumnSpan="{Binding MinTrailLengthColumnSpan}" />
-                    <Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding UseTrailLengthRange}">-</Label>
-                    <NumericUpDown Grid.Column="2" Value="{Binding MaxTrailLength}" Minimum="1"
-                                   IsVisible="{Binding UseTrailLengthRange}" />
-                </Grid>
-                <CheckBox IsChecked="{Binding UseTrailLengthRange}">Randomize</CheckBox>
-            </StackPanel>
-
-            <StackPanel Margin="0 0 0 20">
-                <Label>Iterations</Label>
-                <NumericUpDown Value="{Binding Iterations}" Minimum="1" />
-            </StackPanel>
-
-            <StackPanel Margin="0 0 0 20">
-                <CheckBox IsChecked="{Binding OpenWhenComplete}">Open video when done</CheckBox>
-                <CheckBox IsChecked="{Binding AskForFilename}">Ask where to save every time</CheckBox>
-            </StackPanel>
-
-            <Grid ColumnDefinitions="* Auto">
-                <Button
-                    Grid.Column="0"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    Command="{Binding StartCorrupting}"
-                    IsEnabled="{Binding CanStartCorrupting}"
-                    Background="{DynamicResource AccentButtonBackground}"
-                    Margin="0 0 8 0">
-                    Corrupt
-                </Button>
-                <Button Grid.Column="1" Command="{Binding OnOpenResultPressed}">Open Result</Button>
-            </Grid>
-
-            <ProgressBar IsIndeterminate="False" Value="{Binding ProgressAmount}" />
-            <TextBlock Text="{Binding ProgressMessage}" TextWrapping="Wrap" />
-
-        </StackPanel>
-    </StackPanel>
+	    </StackPanel>
+	</ScrollViewer>
 </Window>
