@@ -17,7 +17,7 @@
         <Company>branchpanic</Company>
         <Product>vdcrpt</Product>
 
-        <Version>22.04.01</Version>
+        <Version>22.09.01</Version>
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
