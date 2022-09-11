@@ -103,6 +103,9 @@ def fetch_ffmpeg(c, runtime: str) -> str:
 
 @task
 def clean(c):
+    # Building from Windows and then WSL can result in broken packages
+    c.run("dotnet restore")
+
     c.run("dotnet clean -p:PublishSelfContained=false")
 
     for script_path in (TEMP, DIST):
@@ -133,6 +136,10 @@ def dist(c, runtime=""):
     ffmpeg_path = fetch_ffmpeg(c, runtime)
 
     print_step(f"Building for {runtime}")
+
+    # Building from Windows and then WSL can result in broken packages
+    c.run("dotnet restore")
+
     if runtime == "win-x64":
         shutil.rmtree(f"dist/vdcrpt-win-x64", ignore_errors=True)
         c.run(

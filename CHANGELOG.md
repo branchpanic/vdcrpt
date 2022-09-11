@@ -8,6 +8,11 @@
 - Reduced field spacing and scaled down some elements
 - Reduced default and minimum window sizes
 
+### Known Issues
+
+- Glitchy resizing (window lags, blue artifacts sometimes appear?) on Linux
+- Issues from 22.04.01 remain
+
 ## [22.04.01]
 
 ### Changes
