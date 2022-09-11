@@ -196,7 +196,7 @@ def dist(c, runtime=""):
 
         bundle_path = dist_path / "vdcrpt.app"
         shutil.copytree(
-            PROJECT_DIR / "bin/Release/net5.0/osx-x64/publish/vdcrpt.app",
+            PROJECT_DIR / "bin/Release/net6.0/osx-x64/publish/vdcrpt.app",
             bundle_path,
         )
 
