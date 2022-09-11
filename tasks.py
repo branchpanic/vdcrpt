@@ -14,6 +14,7 @@ from invoke import task  # pip install invoke
 from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
+from urllib.request import urlretrieve
 import shutil
 
 TEMP = Path("temp")
@@ -80,7 +81,7 @@ def fetch_ffmpeg(c, runtime: str) -> str:
     with c.cd(work_path):  # only applies to c.run
         if not (work_path / archive_name).is_file():
             print_step(f"Downloading {archive_name} from {url}")
-            c.run(f"wget {url} -O {archive_name}")
+            urlretrieve(url, work_path / archive_name)
 
         if runtime == "win-x64":
             c.run(f"7z e {archive_name} ffmpeg.exe -r -y")
@@ -176,7 +177,7 @@ def dist(c, runtime=""):
         if not appimagetool.is_file():
             appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage"
             print('Downloading AppImage tool from', appimagetool_url)
-            c.run(f"wget -O {appimagetool} {appimagetool_url}")
+            urlretrieve(appimagetool_url, appimagetool)
             c.run(f"chmod +x {appimagetool}")
 
         appimage_path = dist_path / f"vdcrpt-{version}-{runtime}.AppImage"

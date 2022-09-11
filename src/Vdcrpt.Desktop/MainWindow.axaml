@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:v="clr-namespace:Vdcrpt.Desktop"
         mc:Ignorable="d"
-        Width="550" Height="700"
+        Width="560" Height="700"
         MinWidth="350" MinHeight="500"
         x:Class="Vdcrpt.Desktop.MainWindow"
         x:Name="Window"
@@ -23,7 +23,7 @@
 	<DockPanel>
         <Menu DockPanel.Dock="Top">
                 <MenuItem Header="File">
-                        <MenuItem Header="Open..." Command="{Binding OnOpenPressed}" IsEnabled="{Binding !IsBusy}" />
+                        <MenuItem Header="Open..." Click="OnOpenPressed" IsEnabled="{Binding !IsBusy}" />
                         <Separator />
                         <MenuItem Header="Exit" Command="{Binding OnExitPressed}" />
                 </MenuItem>
@@ -44,7 +44,7 @@
                     </StackPanel>
                 </Border>
 
-                <StackPanel Spacing="16" Margin="16" MaxWidth="450" IsEnabled="{Binding !IsBusy}">
+                <StackPanel Spacing="16" Margin="16" MaxWidth="480" IsEnabled="{Binding !IsBusy}">
                     <StackPanel>
                         <Label>Video</Label>
                         <Grid ColumnDefinitions="Auto *">

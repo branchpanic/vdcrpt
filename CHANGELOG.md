@@ -1,5 +1,13 @@
 ﻿# Changelog
 
+## [22.09.01]
+
+### Changes
+
+- Made UI scrollable
+- Reduced field spacing and scaled down some elements
+- Reduced default and minimum window sizes
+
 ## [22.04.01]
 
 ### Changes
