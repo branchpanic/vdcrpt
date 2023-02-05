@@ -6,7 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
-namespace Vdcrpt.Desktop;
+namespace Vdcrpt.Desktop.Views;
 
 public partial class MainWindow : Window
 {

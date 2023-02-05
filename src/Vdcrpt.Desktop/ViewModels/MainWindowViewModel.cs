@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
@@ -13,47 +11,25 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
 using FFMpegCore.Exceptions;
-using JetBrains.Annotations;
-using Vdcrpt;
-using Vdcrpt.BuiltIns.Effects;
 
-namespace Vdcrpt.Desktop;
+namespace Vdcrpt.Desktop.ViewModels;
 
-// TODO: This should be broken into smaller components
-public sealed class MainWindowViewModel : INotifyPropertyChanged
+public sealed class MainWindowViewModel : ViewModelBase
 {
     private const string DefaultProgressMessage = "Ready!";
 
     private readonly BackgroundWorker _corruptWorker;
 
     private string _inputPath = string.Empty;
-    private Preset _currentPreset;
-    private int _burstSize = 5000;
-    private int _iterations = 5;
-    private int _minTrailLength = 10;
-    private int _maxTrailLength = 20;
+    private EffectSettingsViewModel _effectSettings;
+    private OutputSettingsViewModel _outputSettings;
 
     // TODO: Avalonia lets us bind directly to methods, commands not always necessary
     private DelegateCommand _onOpenResultPressed;
-    private bool _openWhenComplete = false;
-    private bool _askForFilename = true;
     private string _outputPath = string.Empty;
 
     private int _progressAmount;
     private string _progressMessage = DefaultProgressMessage;
-
-    #region Properties
-
-    public ICommand OpenUrl { get; } = new DelegateCommand(url =>
-    {
-        if (url is not string urlString) return;
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = urlString,
-            UseShellExecute = true
-        });
-    });
 
     public bool CanStartCorrupting => File.Exists(InputPath) && !IsBusy;
 
@@ -64,105 +40,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get => _inputPath;
         set
         {
-            if (value == _inputPath) return;
+            if (value == _inputPath)
+            {
+                return;
+            }
             _inputPath = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(CanStartCorrupting));
 
-            if (!File.Exists(_inputPath)) throw new DataValidationException("File does not exist.");
+            if (!File.Exists(_inputPath))
+            {
+                throw new DataValidationException("File does not exist.");
+            }
         }
     }
 
-    [Range(1, int.MaxValue)]
-    public int BurstSize
+    public EffectSettingsViewModel EffectViewModel
     {
-        get => _burstSize;
-        set
-        {
-            if (value == _burstSize) return;
-            _burstSize = value;
-            OnPropertyChanged();
-        }
+        get => _effectSettings;
+        set => RaiseAndSetIfChanged(ref _effectSettings, value);
     }
 
-    [Range(1, int.MaxValue)]
-    public int MinTrailLength
+    public OutputSettingsViewModel OutputSettingsViewModel
     {
-        get => _minTrailLength;
-        set
-        {
-            if (value == _minTrailLength) return;
-            _minTrailLength = value;
-            OnPropertyChanged();
-
-            if (_maxTrailLength < _minTrailLength) _maxTrailLength = _minTrailLength;
-            OnPropertyChanged(nameof(MaxTrailLength));
-        }
-    }
-
-    [Range(1, int.MaxValue)]
-    public int MaxTrailLength
-    {
-        get => _maxTrailLength;
-        set
-        {
-            if (value == _maxTrailLength) return;
-            _maxTrailLength = value;
-            OnPropertyChanged();
-
-            if (_minTrailLength > _maxTrailLength) _minTrailLength = _maxTrailLength;
-            OnPropertyChanged(nameof(MinTrailLength));
-        }
-    }
-
-    private bool _useTrailLengthRange;
-    public int MinTrailLengthColumnSpan => _useTrailLengthRange ? 1 : 3;
-
-    public bool UseTrailLengthRange
-    {
-        get => _useTrailLengthRange;
-        set
-        {
-            if (value == _useTrailLengthRange) return;
-            _useTrailLengthRange = value;
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(MinTrailLengthColumnSpan));
-        }
-    }
-
-    [Range(1, int.MaxValue)]
-    public int Iterations
-    {
-        get => _iterations;
-        set
-        {
-            if (value == _iterations) return;
-            _iterations = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool OpenWhenComplete
-    {
-        get => _openWhenComplete;
-        set
-        {
-            if (value == _openWhenComplete) return;
-            _openWhenComplete = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool AskForFilename
-    {
-        get => _askForFilename;
-        set
-        {
-            if (value == _askForFilename) return;
-            _askForFilename = value;
-            OnPropertyChanged();
-        }
+        get => _outputSettings;
+        set => RaiseAndSetIfChanged(ref _outputSettings, value);
     }
 
     public int ProgressAmount
@@ -215,31 +117,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // TODO: User-defined presets
-    public List<Preset> Presets { get; } = Preset.DefaultPresets;
-
-    public Preset CurrentPreset
-    {
-        get => _currentPreset;
-        set
-        {
-            if (value == _currentPreset) return;
-            _currentPreset = value;
-            OnPropertyChanged();
-
-            BurstSize = _currentPreset.BurstSize;
-            MinTrailLength = _currentPreset.MinBurstLength;
-
-            UseTrailLengthRange = _currentPreset.UseLengthRange;
-            if (_currentPreset.UseLengthRange) MaxTrailLength = _currentPreset.MaxBurstLength;
-
-            Iterations = _currentPreset.Iterations;
-        }
-    }
-
-    #endregion
-
-
     public ICommand OnOpenResultPressed => _onOpenResultPressed;
 
     public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
@@ -257,7 +134,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public MainWindowViewModel()
     {
-        _currentPreset = CurrentPreset = Presets[0];
+        _effectSettings = new EffectSettingsViewModel();
+        _outputSettings = new OutputSettingsViewModel();
 
         _corruptWorker = new BackgroundWorker();
         _corruptWorker.WorkerReportsProgress = true;
@@ -302,7 +180,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsBusy));
             OnPropertyChanged(nameof(CanStartCorrupting));
 
-            if (args.Error is null && OpenWhenComplete) _onOpenResultPressed.Execute(null);
+            if (args.Error is null && _outputSettings.OpenWhenComplete) _onOpenResultPressed.Execute(null);
         };
     }
 
@@ -326,12 +204,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (Application.Current?.ApplicationLifetime is not ClassicDesktopStyleApplicationLifetime app) return;
 
-        if (!AskForFilename || string.IsNullOrEmpty(OutputPath))
+        if (!_outputSettings.AskForFilename || string.IsNullOrEmpty(OutputPath))
         {
             OutputPath = GenerateOutputPath(_inputPath);
         }
 
-        if (AskForFilename)
+        if (_outputSettings.AskForFilename)
         {
             var dialog = new SaveFileDialog
             {
@@ -360,29 +238,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(CanStartCorrupting));
     }
 
+    public void OpenUrl(string url)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        });
+    }
+
     private void DoBackgroundWork(object? sender, DoWorkEventArgs args)
     {
         if (sender is not BackgroundWorker worker) return;
 
-        var effect = new BinaryRepeatEffect
-        {
-            Iterations = _iterations,
-            BurstSize = _burstSize,
-            MinBurstLength = _minTrailLength,
-            MaxBurstLength = UseTrailLengthRange ? _maxTrailLength : _minTrailLength,
-        };
+        var effect = _effectSettings.MakeEffect();
 
         worker.ReportProgress(50, "Corrupting data...");
         Session.ApplyEffects(_inputPath, _outputPath, effect);
 
         worker.ReportProgress(100, "Finishing up...");
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    [NotifyPropertyChangedInvocator]
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

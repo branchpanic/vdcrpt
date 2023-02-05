@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
@@ -11,9 +11,9 @@
         <PublishReadyToRun>false</PublishReadyToRun>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport> 
-        <Nullable>enable</Nullable>
-
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<Nullable>enable</Nullable>
+		
         <Company>branchpanic</Company>
         <Product>vdcrpt</Product>
 
@@ -40,7 +40,10 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Compile Update="MainWindow.axaml.cs">
+      <Compile Update="Views\EffectSettingsView.axaml.cs">
+        <DependentUpon>EffectSettingsView.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\MainWindow.axaml.cs">
         <DependentUpon>MainWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
