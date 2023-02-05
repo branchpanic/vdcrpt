@@ -1,14 +1,14 @@
 using FFMpegCore;
 using FFMpegCore.Arguments;
 
-namespace Vdcrpt.Next;
+namespace Vdcrpt;
 
 /// <summary>
 /// A Session is the environment used to apply IEffects to a video.
 /// </summary>
 public class Session : IDisposable
 {
-    private Guid _sessionId;
+    private readonly Guid _sessionId;
 
     // TODO: Allow changing the input file after effects have already been applied.
     private readonly string _initialFile;
@@ -61,7 +61,7 @@ public class Session : IDisposable
     public void Render(string output) =>
         Render(output, args =>
             args.WithoutMetadata()
-                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues 
+                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues
                 .WithVideoCodec("libx264")
                 .WithAudioCodec("aac")
         );
@@ -75,7 +75,7 @@ public class Session : IDisposable
     public async Task RenderAsync(string output) =>
         await RenderAsync(output, args =>
             args.WithoutMetadata()
-                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues 
+                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues
                 .WithVideoCodec("libx264")
                 .WithAudioCodec("aac")
         );
@@ -115,7 +115,7 @@ public class Session : IDisposable
 
     /// <summary>
     /// Applies the given effects to the input file, then saves the result to the output file.
-    /// 
+    ///
     /// All the usual Session caching still applies. This method just wraps creating and disposing the session for
     /// accelerated "one-shot" use.
     /// </summary>

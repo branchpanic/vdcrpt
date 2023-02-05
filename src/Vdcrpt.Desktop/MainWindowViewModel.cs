@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -14,8 +14,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
 using FFMpegCore.Exceptions;
 using JetBrains.Annotations;
-using Vdcrpt.Next;
-using Vdcrpt.Next.BuiltIns.Effects;
+using Vdcrpt;
+using Vdcrpt.BuiltIns.Effects;
 
 namespace Vdcrpt.Desktop;
 
@@ -368,8 +368,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             Iterations = _iterations,
             BurstSize = _burstSize,
-            MaxBurstLength = _minTrailLength,
-            MinBurstLength = _maxTrailLength
+            MinBurstLength = _minTrailLength,
+            MaxBurstLength = UseTrailLengthRange ? _maxTrailLength : _minTrailLength,
         };
 
         worker.ReportProgress(50, "Corrupting data...");

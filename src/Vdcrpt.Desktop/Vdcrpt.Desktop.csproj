@@ -31,8 +31,8 @@
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\Vdcrpt.Next\Vdcrpt.Next.csproj" />
-        <ProjectReference Include="..\Vdcrpt.Next.BuiltIns\Vdcrpt.Next.BuiltIns.csproj" />
+        <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
+        <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj" />
     </ItemGroup>
     
     <ItemGroup>

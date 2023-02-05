@@ -1,6 +1,6 @@
-using Vdcrpt.Next;
+using Vdcrpt;
 
-namespace Vdcrpt.Next.Tests;
+namespace Vdcrpt.Tests;
 
 public class EffectContextTests : IDisposable
 {

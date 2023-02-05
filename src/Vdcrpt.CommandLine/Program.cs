@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using CommandLine;
-using Vdcrpt.Next;
-using Vdcrpt.Next.BuiltIns.Effects;
+using Vdcrpt;
+using Vdcrpt.BuiltIns.Effects;
 
 namespace Vdcrpt.CommandLine;
 

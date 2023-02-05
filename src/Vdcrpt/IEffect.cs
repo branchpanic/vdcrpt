@@ -1,4 +1,4 @@
-namespace Vdcrpt.Next;
+namespace Vdcrpt;
 
 /// <summary>
 /// An IEffect takes a video file and produces another video file.

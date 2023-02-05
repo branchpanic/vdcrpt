@@ -1,4 +1,4 @@
-namespace Vdcrpt.Next.BuiltIns.Effects;
+namespace Vdcrpt.BuiltIns.Effects;
 
 /// <summary>
 /// A BinaryRepeatEffect creates randomized bursts of repeated binary data in a file, kind of like a scratched CD or

@@ -1,6 +1,6 @@
 using FFMpegCore;
 
-namespace Vdcrpt.Next;
+namespace Vdcrpt;
 
 /// <summary>
 /// An EffectContext describes the working environment for an effect.

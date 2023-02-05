@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace Vdcrpt.Next;
+namespace Vdcrpt;
 
 public static class CacheUtility
 {
