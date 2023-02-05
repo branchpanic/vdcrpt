@@ -3,8 +3,13 @@ using FFMpegCore;
 namespace Vdcrpt.Next;
 
 /// <summary>
-/// An EffectContext describes the working environment for an effect. It primarily handles cached and temporary
-/// ("scratch") files.
+/// An EffectContext describes the working environment for an effect.
+///
+/// Effects should use the provided methods for getting "scratch" (temporary, disposable) and "cache" (reusable) file
+/// paths. The former allows for easier cleanup, while the latter cuts down on repeated work.
+///
+/// Some common operations, like converting audio and/or video codecs using FFMpeg, are provided as extension methods
+/// with automatic caching.
 /// </summary>
 public class EffectContext
 {
@@ -18,7 +23,7 @@ public class EffectContext
     }
 
     /// <summary>
-    /// Gets a path to a unique temporary file that is eventually deleted.
+    /// Gets a path to a unique temporary file that is deleted when the session ends.
     /// </summary>
     public string GetScratchFile(string extension = "")
     {
@@ -28,7 +33,7 @@ public class EffectContext
 
     /// <summary>
     /// Gets a cached file using an arbitrary key, returning a boolean indicating whether the file already exists.
-    /// Cached files are local to effect types, and are intended to persist between runs.
+    /// Cached files are local to effect types, and persist between runs.
     /// </summary>
     public (string path, bool exists) GetCachedFile(string key, string extension = "")
     {
@@ -42,11 +47,7 @@ public class EffectContext
 
     /// <summary>
     /// Gets a cached file using an arbitrary compound key (where order of components matters), returning a boolean
-    /// indicating whether the file already exists. Cached files are local to effect types, and are intended to persist
-    /// between runs.
-    ///
-    /// Note that the behavior of this overload cannot be emulated using the single-key overload. So,
-    /// GetCachedFile(new string[] { "A", "B" }) and GetCachedFile("A/B") will produce different results.
+    /// indicating whether the file already exists. Cached files are local to effect types, and persist between runs.
     /// </summary>
     public (string path, bool exists) GetCachedFile(string[] keys, string extension = "")
     {
@@ -93,7 +94,7 @@ public static class EffectContextExtensions
     /// 
     /// This is especially useful for preprocessing steps that have a deterministic output based on an input file.
     /// </summary>
-    public static (string path, bool exists) DeriveCachedFile(
+    public static (string path, bool exists) GetDerivedFile(
         this EffectContext context,
         string originalFile,
         string derivedFileKey,
@@ -101,7 +102,7 @@ public static class EffectContextExtensions
     )
     {
         return context.GetCachedFile(
-            new[] { CacheUtility.GetKeyFromFile(originalFile), derivedFileKey },
+            new[] { CacheUtility.GetKeyFromContents(originalFile), derivedFileKey },
             extension
         );
     }
@@ -109,7 +110,7 @@ public static class EffectContextExtensions
     /// <summary>
     /// Converts a given file using FFMpeg and caches the result.
     /// </summary>
-    public static string ConvertCached(
+    public static string ConvertFile(
         this EffectContext context,
         string inputPath,
         string vcodec,
@@ -117,12 +118,11 @@ public static class EffectContextExtensions
         string format
     )
     {
-        var (path, exists) = context.DeriveCachedFile(inputPath, $"v{vcodec}_a{acodec}", format);
+        var (path, exists) = context.GetDerivedFile(inputPath, $"v{vcodec}_a{acodec}", format);
         if (exists)
         {
             return path;
         }
-
 
         FFMpegArguments
             .FromFileInput(inputPath)

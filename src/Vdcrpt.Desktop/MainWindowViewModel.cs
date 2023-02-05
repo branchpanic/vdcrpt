@@ -14,6 +14,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
 using FFMpegCore.Exceptions;
 using JetBrains.Annotations;
+using Vdcrpt.Next;
+using Vdcrpt.Next.BuiltIns.Effects;
 
 namespace Vdcrpt.Desktop;
 
@@ -335,7 +337,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 Directory = Path.GetDirectoryName(OutputPath),
                 InitialFileName = Path.GetFileName(OutputPath),
-                Filters =
+                Filters = new List<FileDialogFilter>
                 {
                     new FileDialogFilter { Extensions = { "mp4" }, Name = "MP4 video" },
                 },
@@ -362,15 +364,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (sender is not BackgroundWorker worker) return;
 
-        worker.ReportProgress(25, "Loading video...");
-        var video = Video.Load(_inputPath);
+        var effect = new BinaryRepeatEffect
+        {
+            Iterations = _iterations,
+            BurstSize = _burstSize,
+            MaxBurstLength = _minTrailLength,
+            MinBurstLength = _maxTrailLength
+        };
 
         worker.ReportProgress(50, "Corrupting data...");
-        video.Transform(Effects.Repeat(_iterations, _burstSize, _minTrailLength,
-            UseTrailLengthRange ? _maxTrailLength : _minTrailLength));
-
-        worker.ReportProgress(75, "Rendering corrupted video...");
-        video.Save(_outputPath);
+        Session.ApplyEffects(_inputPath, _outputPath, effect);
 
         worker.ReportProgress(100, "Finishing up...");
     }

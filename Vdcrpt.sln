@@ -1,19 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt", "src\Vdcrpt\Vdcrpt.csproj", "{825BB3D3-01B7-4FCE-A69E-7F6DECD64B25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vdcrpt", "src\Vdcrpt\Vdcrpt.csproj", "{825BB3D3-01B7-4FCE-A69E-7F6DECD64B25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Desktop", "src\Vdcrpt.Desktop\Vdcrpt.Desktop.csproj", "{5588099B-1F53-43D0-A12F-B066D5644C2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vdcrpt.Desktop", "src\Vdcrpt.Desktop\Vdcrpt.Desktop.csproj", "{5588099B-1F53-43D0-A12F-B066D5644C2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.CommandLine", "src\Vdcrpt.CommandLine\Vdcrpt.CommandLine.csproj", "{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vdcrpt.CommandLine", "src\Vdcrpt.CommandLine\Vdcrpt.CommandLine.csproj", "{A955C628-AE29-4BE6-8AEA-49FB0DA4E502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next", "src\Vdcrpt.Next\Vdcrpt.Next.csproj", "{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vdcrpt.Next", "src\Vdcrpt.Next\Vdcrpt.Next.csproj", "{BCE8A20D-B75E-4350-93D1-BB55AEC7F270}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5709C1DB-2704-4CE2-94EA-7E9D2B183B93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next.Tests", "tests\Vdcrpt.Next.Tests\Vdcrpt.Next.Tests.csproj", "{8E93B738-2B6C-431C-89A0-180F30126F4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vdcrpt.Next.Tests", "tests\Vdcrpt.Next.Tests\Vdcrpt.Next.Tests.csproj", "{8E93B738-2B6C-431C-89A0-180F30126F4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vdcrpt.Next.BuiltIns", "src\Vdcrpt.Next.BuiltIns\Vdcrpt.Next.BuiltIns.csproj", "{A50C8BB3-5003-44CD-A431-BDA69FB0E126}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,9 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{825BB3D3-01B7-4FCE-A69E-7F6DECD64B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -88,8 +87,26 @@ Global
 		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x64.Build.0 = Release|Any CPU
 		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x86.ActiveCfg = Release|Any CPU
 		{8E93B738-2B6C-431C-89A0-180F30126F4E}.Release|x86.Build.0 = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|x64.Build.0 = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Debug|x86.Build.0 = Debug|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|x64.ActiveCfg = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|x64.Build.0 = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|x86.ActiveCfg = Release|Any CPU
+		{A50C8BB3-5003-44CD-A431-BDA69FB0E126}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8E93B738-2B6C-431C-89A0-180F30126F4E} = {5709C1DB-2704-4CE2-94EA-7E9D2B183B93}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37F558B0-9511-43B8-B62B-B708DF43DDD4}
 	EndGlobalSection
 EndGlobal

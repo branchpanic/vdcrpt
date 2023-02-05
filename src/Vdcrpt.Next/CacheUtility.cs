@@ -4,15 +4,16 @@ namespace Vdcrpt.Next;
 
 public static class CacheUtility
 {
-    public static string GetKeyFromFile(string path)
+    public static string GetKeyFromContents(string path)
     {
-        // Could have an overload that also returns this stream to avoid repeated reads, but we'll do that when we need
-        // it.
         using var stream = File.OpenRead(path);
+        return GetKeyFromContents(stream);
+    }
 
-        // Don't depend on the result of this function being an MD5 hash, it could eventually change.
+    public static string GetKeyFromContents(Stream sr)
+    {
         using var md5 = MD5.Create();
-        var hash = md5.ComputeHash(stream);
+        var hash = md5.ComputeHash(sr);
         return BitConverter.ToString(hash);
     }
 

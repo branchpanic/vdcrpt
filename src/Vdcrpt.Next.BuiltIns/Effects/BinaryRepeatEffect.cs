@@ -1,4 +1,4 @@
-namespace Vdcrpt.Next.Effects;
+namespace Vdcrpt.Next.BuiltIns.Effects;
 
 /// <summary>
 /// A BinaryRepeatEffect creates randomized bursts of repeated binary data in a file, kind of like a scratched CD or
@@ -20,8 +20,8 @@ public class BinaryRepeatEffect : IEffect
 
     public void Apply(EffectContext context, string inputPath, string outputPath)
     {
-        var aviPath = context.ConvertCached(inputPath, "mpeg4", "pcm_mulaw", "avi");
-        var data = File.ReadAllBytes(inputPath);
+        var aviPath = context.ConvertFile(inputPath, "mpeg4", "pcm_mulaw", "avi");
+        var data = File.ReadAllBytes(aviPath);
 
         var repetitions = new int[Iterations];
         if (MinBurstLength <= MaxBurstLength)

@@ -7,7 +7,10 @@ namespace Vdcrpt.Next;
 /// trying to create interesting artifacts without rendering the result unplayable.
 ///
 /// When working with files, IEffects should use the "scratch" and "cache" mechanisms provided by their given
-/// EffectContexts. However, they shouldn't memoize themselves entirely -- that should be left up to the caller.
+/// EffectContexts.
+///
+/// IEffects may assume that their caller will only call them if there is something new to calculate. So, memoizing
+/// the implementation of Apply is not necessary.
 /// </summary>
 public interface IEffect
 {

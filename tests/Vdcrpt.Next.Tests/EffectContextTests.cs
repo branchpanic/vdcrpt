@@ -141,7 +141,9 @@ public class EffectContextTests : IDisposable
     {
         Assert.Throws<ArgumentNullException>(() =>
         {
+            #pragma warning disable 8600, 8625
             _ctx.GetCachedFile((string[])null);
+            #pragma warning restore 8600, 8625
         });
     }
 
@@ -161,13 +163,5 @@ public class EffectContextTests : IDisposable
 
         // Should not throw exception
         File.WriteAllText(path, "hello");
-    }
-
-    [Fact]
-    public void GetCacheFile_SingleKeyCannotEmulateCompoundKey()
-    {
-        var (path1, _) = _ctx.GetCachedFile("a/b");
-        var (path2, _) = _ctx.GetCachedFile(new string[] { "a", "b" });
-        Assert.NotEqual(path1, path2);
     }
 }

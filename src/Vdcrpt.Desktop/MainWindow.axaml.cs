@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -31,7 +32,7 @@ public partial class MainWindow : Window
 
         var filenamesList = filenames.ToList();
         if (filenamesList.Count <= 0) return;
-            
+
         // Propagates to viewmodel
         _inputPathTextBox.Text = filenamesList[0];
     }
@@ -47,10 +48,9 @@ public partial class MainWindow : Window
         {
             Directory = ".",
             AllowMultiple = false,
-            Filters =
+            Filters = new List<FileDialogFilter>
             {
-                new FileDialogFilter
-                    { Name = "Common Video Files", Extensions = { "mp4", "avi", "mkv", "mov", "gif" } },
+                new FileDialogFilter { Name = "Common Video Files", Extensions = { "mp4", "avi", "mkv", "mov", "gif" } },
                 new FileDialogFilter { Name = "All Files", Extensions = { "*" } },
             }
         };

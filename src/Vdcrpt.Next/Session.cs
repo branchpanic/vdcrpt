@@ -4,10 +4,13 @@ using FFMpegCore.Arguments;
 namespace Vdcrpt.Next;
 
 /// <summary>
-/// A Session is the main entry point for applying effects to videos.
+/// A Session is the environment used to apply IEffects to a video.
 /// </summary>
 public class Session : IDisposable
 {
+    private Guid _sessionId;
+
+    // TODO: Allow changing the input file after effects have already been applied.
     private readonly string _initialFile;
 
     private readonly string _scratchRoot; // Deleted when session is disposed.
@@ -15,30 +18,30 @@ public class Session : IDisposable
 
     private readonly List<IEffect> _effects;
 
-    public Session(string initialFile, string? tempDir = null)
+    public Session(string initialFile, Guid? sessionId = null, string? tempDir = null)
     {
+        _sessionId = sessionId ?? Guid.NewGuid();
+
         tempDir ??= Path.Join(Path.GetTempPath(), "vdcrpt");
         _effects = new List<IEffect>();
         _initialFile = initialFile;
 
         _cacheRoot = Path.Join(tempDir, "cache");
 
-        var inputKey = CacheUtility.GetKeyFromFile(initialFile);
-        _scratchRoot = Path.Join(tempDir, $"scratch-{inputKey}-{Guid.NewGuid()}");
+        var inputKey = CacheUtility.GetKeyFromContents(initialFile);
+        _scratchRoot = Path.Join(tempDir, $"scratch-{inputKey}-{_sessionId}");
 
         Directory.CreateDirectory(_cacheRoot);
         Directory.CreateDirectory(_scratchRoot);
     }
 
-    public Session Apply(IEffect effect)
+    public Session Add(IEffect effect)
     {
-        // NOTE: Deferred to Render. This could eventually do more work in the background, i.e. incremental rendering-
-        //       but we'll do that when we need it.
         _effects.Add(effect);
         return this;
     }
 
-    private EffectContext CreateContext(string effectKey)
+    private EffectContext MakeContext(string effectKey)
     {
         return new EffectContext(
             cacheDir: Path.Join(_cacheRoot, effectKey),
@@ -46,15 +49,44 @@ public class Session : IDisposable
         );
     }
 
+    private FFMpegArgumentProcessor BuildFinalOutputArgs(
+        string internalOutput,
+        string output,
+        Action<FFMpegArgumentOptions> buildOutputArgs
+    ) => FFMpegArguments
+            .FromFileInput(internalOutput)
+            .WithGlobalOptions(args => args.WithVerbosityLevel(VerbosityLevel.Fatal))
+            .OutputToFile(output, true, buildOutputArgs);
+
     public void Render(string output) =>
         Render(output, args =>
             args.WithoutMetadata()
-                .WithCustomArgument("-fflags +genpts")
+                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues 
                 .WithVideoCodec("libx264")
                 .WithAudioCodec("aac")
         );
 
     public void Render(string output, Action<FFMpegArgumentOptions> buildOutputArgs)
+    {
+        var result = ApplyEffects();
+        BuildFinalOutputArgs(result, output, buildOutputArgs).ProcessSynchronously();
+    }
+
+    public async Task RenderAsync(string output) =>
+        await RenderAsync(output, args =>
+            args.WithoutMetadata()
+                .WithCustomArgument("-fflags +genpts")  // Fix unwated timecode issues 
+                .WithVideoCodec("libx264")
+                .WithAudioCodec("aac")
+        );
+
+    public async Task RenderAsync(string output, Action<FFMpegArgumentOptions> buildOutputArgs)
+    {
+        var result = ApplyEffects();
+        await BuildFinalOutputArgs(result, output, buildOutputArgs).ProcessAsynchronously();
+    }
+
+    private string ApplyEffects()
     {
         var prev = _initialFile;
         var current = prev;
@@ -63,7 +95,7 @@ public class Session : IDisposable
         {
             var effect = _effects[i];
             current = Path.Join(_cacheRoot, $"render-{i:0000}");
-            effect.Apply(CreateContext(effect.GetType().ToString()), prev, current);
+            effect.Apply(MakeContext(effect.GetType().ToString()), prev, current);
 
             if (!File.Exists(current))
             {
@@ -73,17 +105,7 @@ public class Session : IDisposable
             prev = current;
         }
 
-        FFMpegArguments
-            .FromFileInput(current)
-            .WithGlobalOptions(args => args.WithVerbosityLevel(VerbosityLevel.Fatal))
-            .OutputToFile(output, true, buildOutputArgs)
-            .ProcessSynchronously();  // TODO: Async option if needed.
-    }
-
-    public void DeleteCache()
-    {
-        Directory.Delete(_cacheRoot, true);
-        Directory.CreateDirectory(_cacheRoot);
+        return current;
     }
 
     public void Dispose()
@@ -103,7 +125,7 @@ public class Session : IDisposable
 
         foreach (var effect in effects)
         {
-            session.Apply(effect);
+            session.Add(effect);
         }
 
         session.Render(outputPath);
