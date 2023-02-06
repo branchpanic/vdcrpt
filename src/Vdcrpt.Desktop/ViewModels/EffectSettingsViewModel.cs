@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Vdcrpt.BuiltIns.Effects;
+using Vdcrpt.Desktop.Models;
 
 namespace Vdcrpt.Desktop.ViewModels
 {
@@ -15,7 +16,7 @@ namespace Vdcrpt.Desktop.ViewModels
         private bool _useBurstLengthRange;
 
         // TODO: User-defined presets
-        public List<Preset> Presets { get; } = Preset.DefaultPresets;
+        public IReadOnlyList<Preset> Presets { get; } = UserConfig.CreateDefault().Presets;
 
         public Preset CurrentPreset
         {
@@ -24,13 +25,21 @@ namespace Vdcrpt.Desktop.ViewModels
             {
                 RaiseAndSetIfChanged(ref _preset, value);
 
-                BurstSize = _preset.BurstSize;
-                MinBurstLength = _preset.MinBurstLength;
+                BurstSize = _preset.Settings.BurstSize;
+                MinBurstLength = _preset.Settings.MinBurstLength;
 
-                UseBurstLengthRange = _preset.UseLengthRange;
-                if (_preset.UseLengthRange) MaxBurstLength = _preset.MaxBurstLength;
+                if (_preset.Settings.MaxBurstLength != null)
+                {
+                    UseBurstLengthRange = true;
+                    MaxBurstLength = _preset.Settings.MaxBurstLength.Value;
+                }
+                else
+                {
+                    UseBurstLengthRange = false;
+                    MaxBurstLength = MinBurstLength + 1000;
+                }
 
-                Iterations = _preset.Iterations;
+                Iterations = _preset.Settings.Iterations;
             }
         }
 
@@ -98,7 +107,7 @@ namespace Vdcrpt.Desktop.ViewModels
         {
             BurstSize = _burstSize,
             MinBurstLength = _minBurstLength,
-            MaxBurstLength = _useBurstLengthRange ? _maxBurstLength : _minBurstLength,
+            MaxBurstLength = _useBurstLengthRange ? _maxBurstLength : null,
             Iterations = _iterations,
         };
     }
