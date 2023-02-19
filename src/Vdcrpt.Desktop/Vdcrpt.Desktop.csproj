@@ -12,8 +12,7 @@
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<Nullable>enable</Nullable>
-		
+
         <Company>branchpanic</Company>
         <Product>vdcrpt</Product>
 
@@ -21,34 +20,35 @@
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <ApplicationIcon>Assets/Icon.ico</ApplicationIcon>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.18" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
 
         <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
         <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <Compile Update="Views\EffectSettingsView.axaml.cs">
-        <DependentUpon>EffectSettingsView.axaml</DependentUpon>
-      </Compile>
-      <Compile Update="Views\MainWindow.axaml.cs">
-        <DependentUpon>MainWindow.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
+        <Compile Update="Views\EffectSettingsView.axaml.cs">
+            <DependentUpon>EffectSettingsView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
-    
+
     <PropertyGroup>
         <CFBundleName>vdcrpt</CFBundleName>
         <CFBundleDisplayName>vdcrpt</CFBundleDisplayName>
@@ -59,5 +59,13 @@
         <CFBundleIconFile>vdcrpt.icns</CFBundleIconFile>
         <NSPrincipalClass>NSApplication</NSPrincipalClass>
         <NSHighResolutionCapable>true</NSHighResolutionCapable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DebugType>full</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>full</DebugType>
     </PropertyGroup>
 </Project>

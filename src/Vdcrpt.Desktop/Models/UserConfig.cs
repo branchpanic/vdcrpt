@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 
 namespace Vdcrpt.Desktop.Models;
 
-public class UserConfig
+public partial class UserConfig : ObservableObject
 {
-    public bool OpenWhenComplete { get; set; }
-    public bool AskForFilename { get; set; }
+    [ObservableProperty] bool _openWhenComplete;
+
+    [ObservableProperty] bool _askForFilename;
+
     public IReadOnlyList<Preset> Presets { get; private set; }
 
     public UserConfig()
@@ -25,55 +28,79 @@ public class UserConfig
                 new()
                 {
                     Name = "Melting Chaos",
-                    Settings = new() { BurstSize = 3000,
-                    MinBurstLength = 8,
-                    Iterations = 400
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 3000,
+                        MinBurstLength = 8,
+                        Iterations = 400
+                    }
+                },
                 new()
                 {
                     Name = "Jittery",
-                    Settings = new() { BurstSize = 20000,
-                    MinBurstLength = 1,
-                    MaxBurstLength = 8,
-                    Iterations = 200
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 20000,
+                        MinBurstLength = 1,
+                        MaxBurstLength = 8,
+                        UseBurstLengthRange = true,
+                        Iterations = 200
+                    }
+                },
                 new()
                 {
                     Name = "Source Engine",
-                    Settings = new() { BurstSize = 45000,
-                    MinBurstLength = 2,
-                    MaxBurstLength = 6,
-                    Iterations = 60
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 45000,
+                        MinBurstLength = 2,
+                        MaxBurstLength = 6,
+                        UseBurstLengthRange = true,
+                        Iterations = 60
+                    }
+                },
                 new()
                 {
                     Name = "Subtle",
-                    Settings = new() { BurstSize = 200,
-                    MinBurstLength = 2,
-                    Iterations = 60
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 200,
+                        MinBurstLength = 2,
+                        Iterations = 60
+                    }
+                },
                 new()
                 {
                     Name = "Many Artifacts",
-                    Settings = new() { BurstSize = 500,
-                    MinBurstLength = 3,
-                    Iterations = 2000
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 500,
+                        MinBurstLength = 3,
+                        Iterations = 2000
+                    }
+                },
                 new()
                 {
                     Name = "Trash (unstable, breaks audio)",
-                    Settings = new() { BurstSize = 1,
-                    MinBurstLength = 1,
-                    Iterations = 10000
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 1,
+                        MinBurstLength = 1,
+                        Iterations = 10000
+                    }
+                },
                 new()
                 {
                     Name = "Legacy",
-                    Settings = new() { BurstSize = 1000,
-                    MinBurstLength = 10,
-                    MaxBurstLength = 90,
-                    Iterations = 50
-                }},
+                    Settings = new()
+                    {
+                        BurstSize = 1000,
+                        MinBurstLength = 10,
+                        MaxBurstLength = 90,
+                        UseBurstLengthRange = true,
+                        Iterations = 50
+                    }
+                },
             }
         };
     }

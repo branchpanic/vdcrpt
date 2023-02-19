@@ -1,20 +1,60 @@
-﻿using Vdcrpt.BuiltIns.Effects;
+﻿using System.ComponentModel.DataAnnotations;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Vdcrpt.BuiltIns.Effects;
+using Vdcrpt.Desktop.ViewModels;
 
 namespace Vdcrpt.Desktop.Models
 {
-    public class BinaryRepeatEffectSettings
+    public partial class BinaryRepeatEffectSettings : ObservableValidator
     {
-        public int Iterations { get; set; }
-        public int MinBurstLength { get; set; }
-        public int? MaxBurstLength { get; set; } = null;
-        public int BurstSize { get; set; }
+        [ObservableProperty] [Range(1, int.MaxValue)]
+        private int _burstSize;
 
-        public BinaryRepeatEffect ToEffectInstance() => new BinaryRepeatEffect()
+        [ObservableProperty] [Range(1, int.MaxValue)]
+        private int _iterations;
+
+        [ObservableProperty] [Range(1, int.MaxValue)]
+        private int _maxBurstLength;
+
+        [ObservableProperty] [Range(1, int.MaxValue)]
+        private int _minBurstLength;
+
+        [ObservableProperty] private bool _useBurstLengthRange;
+
+        public BinaryRepeatEffect ToEffectInstance()
         {
-            Iterations = Iterations,
-            MinBurstLength = MinBurstLength,
-            MaxBurstLength = MaxBurstLength,
-            BurstSize = BurstSize,
-        };
+            return new()
+            {
+                Iterations = Iterations,
+                MinBurstLength = MinBurstLength,
+                MaxBurstLength = UseBurstLengthRange ? MaxBurstLength : MinBurstLength,
+                BurstSize = BurstSize
+            };
+        }
+
+        public void CopyFrom(in BinaryRepeatEffectSettings other)
+        {
+            BurstSize = other.BurstSize;
+            Iterations = other.Iterations;
+            MaxBurstLength = other.MaxBurstLength;
+            MinBurstLength = other.MinBurstLength;
+            UseBurstLengthRange = other.UseBurstLengthRange;
+        }
+
+        partial void OnMinBurstLengthChanged(int value)
+        {
+            if (value > MaxBurstLength)
+            {
+                MaxBurstLength = value;
+            }
+        }
+
+        partial void OnMaxBurstLengthChanged(int value)
+        {
+            if (value < MinBurstLength)
+            {
+                MinBurstLength = value;
+            }
+        }
     }
 }

@@ -1,0 +1,28 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:v="clr-namespace:Vdcrpt.Desktop.Views"
+             xmlns:vm="clr-namespace:Vdcrpt.Desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Vdcrpt.Desktop.Views.PresetEffectSettingsView">
+    <Design.DataContext>
+        <vm:PresetEffectSettingsViewModel />
+    </Design.DataContext>
+
+    <StackPanel>
+        <StackPanel>
+            <Label>Preset</Label>
+            <ComboBox Items="{Binding Presets}" SelectedItem="{Binding CurrentPreset}" SelectedIndex="0"
+                      HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <v:EffectSettingsView DataContext="{Binding EffectSettingsViewModel}" />
+    </StackPanel>
+</UserControl>

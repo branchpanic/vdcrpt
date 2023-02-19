@@ -2,48 +2,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:vm="clr-namespace:Vdcrpt.Desktop.ViewModels"
+             xmlns:vm="clr-namespace:Vdcrpt.Desktop.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Vdcrpt.Desktop.Views.EffectSettingsView">
-	<Design.DataContext>
-		<vm:BinaryRepeatEffectViewModel/>
-	</Design.DataContext>
-	
-	<StackPanel Spacing="16">
-		<StackPanel>
-			<Label>Preset</Label>
-			<ComboBox Items="{Binding Presets}" SelectedItem="{Binding CurrentPreset}" SelectedIndex="0"
-					  HorizontalAlignment="Stretch">
-				<ComboBox.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{Binding Name}" />
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
-			</ComboBox>
-		</StackPanel>
+    <Design.DataContext>
+        <vm:EffectSettingsViewModel />
+    </Design.DataContext>
 
-		<StackPanel Classes="FieldGroup">
-			<StackPanel>
-				<Label>Burst Size</Label>
-				<NumericUpDown Value="{Binding BurstSize}" Minimum="1" />
-			</StackPanel>
+    <StackPanel Spacing="16">
+        <StackPanel Classes="FieldGroup">
+            <StackPanel>
+                <Label>Burst Size</Label>
+                <NumericUpDown Value="{Binding Settings.BurstSize}" Minimum="1" />
+            </StackPanel>
 
-			<StackPanel>
-				<Label>Burst Length</Label>
-				<Grid ColumnDefinitions="* Auto *">
-					<NumericUpDown Value="{Binding MinBurstLength}" Minimum="1" Grid.Column="0"
-								   Grid.ColumnSpan="{Binding MinBurstLengthColumnSpan}" />
-					<Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding UseBurstLengthRange}">-</Label>
-					<NumericUpDown Grid.Column="2" Value="{Binding MaxBurstLength}" Minimum="1"
-								   IsVisible="{Binding UseBurstLengthRange}" />
-				</Grid>
-				<CheckBox IsChecked="{Binding UseBurstLengthRange}">Randomize</CheckBox>
-			</StackPanel>
+            <StackPanel>
+                <Label>Burst Length</Label>
+                <Grid ColumnDefinitions="* Auto *">
+                    <NumericUpDown Value="{Binding Settings.MinBurstLength}" Minimum="1" Grid.Column="0"
+                                   Grid.ColumnSpan="{Binding MinBurstLengthColumnSpan}" />
 
-			<StackPanel>
-				<Label>Iterations</Label>
-				<NumericUpDown Value="{Binding Iterations}" Minimum="1" />
-			</StackPanel>
-		</StackPanel>
-	</StackPanel>
+                    <Label Grid.Column="1" Margin="10 0 10 0" IsVisible="{Binding Settings.UseBurstLengthRange}">-</Label>
+
+                    <NumericUpDown Grid.Column="2" Value="{Binding Settings.MaxBurstLength}" Minimum="1"
+                                   IsVisible="{Binding Settings.UseBurstLengthRange}" />
+                </Grid>
+                <CheckBox IsChecked="{Binding Settings.UseBurstLengthRange}">Randomize</CheckBox>
+            </StackPanel>
+
+            <StackPanel>
+                <Label>Iterations</Label>
+                <NumericUpDown Value="{Binding Settings.Iterations}" Minimum="1" />
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
 </UserControl>

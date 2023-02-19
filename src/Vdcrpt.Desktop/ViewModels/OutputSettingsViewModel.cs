@@ -1,19 +1,17 @@
-﻿namespace Vdcrpt.Desktop.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel;
+using Vdcrpt.Desktop.Models;
 
-public class OutputSettingsViewModel : ViewModelBase
+namespace Vdcrpt.Desktop.ViewModels;
+
+public partial class OutputSettingsViewModel : ViewModelBase
 {
-    private bool _openWhenComplete = false;
-    private bool _askForFilename = true;
+    [ObservableProperty] UserConfig _userConfig;
 
-    public bool OpenWhenComplete
+    public OutputSettingsViewModel(UserConfig userConfig)
     {
-        get => _openWhenComplete;
-        set => RaiseAndSetIfChanged(ref _openWhenComplete, value);
+        _userConfig = userConfig;
     }
 
-    public bool AskForFilename
-    {
-        get => _askForFilename;
-        set => RaiseAndSetIfChanged(ref _askForFilename, value);
-    }
+    public OutputSettingsViewModel() : this(new UserConfig()) { }
 }

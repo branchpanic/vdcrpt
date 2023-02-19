@@ -8,7 +8,7 @@ public class BinaryRepeatEffect : IEffect
 {
     public int Iterations { get; init; }
     public int MinBurstLength { get; init; }
-    public int? MaxBurstLength { get; init; }
+    public int MaxBurstLength { get; init; }
     public int BurstSize { get; init; }
 
     private Random _random;
@@ -24,7 +24,7 @@ public class BinaryRepeatEffect : IEffect
         var data = File.ReadAllBytes(aviPath);
 
         var repetitions = new int[Iterations];
-        if (MaxBurstLength == null || MinBurstLength <= MaxBurstLength)
+        if (MinBurstLength <= MaxBurstLength)
         {
             Array.Fill(repetitions, MinBurstLength);
         }
@@ -32,7 +32,7 @@ public class BinaryRepeatEffect : IEffect
         {
             for (var i = 0; i < Iterations; i++)
             {
-                repetitions[i] = _random.Next(MinBurstLength, MaxBurstLength.Value + 1);
+                repetitions[i] = _random.Next(MinBurstLength, MaxBurstLength + 1);
             }
         }
 

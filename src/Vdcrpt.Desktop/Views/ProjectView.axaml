@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:v="clr-namespace:Vdcrpt.Desktop.Views"
+             xmlns:vm="clr-namespace:Vdcrpt.Desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Vdcrpt.Desktop.Views.ProjectView">
+    <Design.DataContext>
+        <vm:ProjectViewModel />
+    </Design.DataContext>
+
+    <StackPanel>
+        <StackPanel Spacing="16" Margin="16" MaxWidth="480" IsEnabled="{Binding !IsBusy}">
+            <StackPanel>
+                <Label>Video</Label>
+                <Grid ColumnDefinitions="Auto *">
+                    <Button Click="OnOpenPressed" Grid.Column="0" Margin="0 0 8 0" VerticalAlignment="Top">Open...</Button>
+                    <TextBox
+                        Grid.Column="1"
+                        DragDrop.AllowDrop="True"
+                        VerticalAlignment="Top"
+
+                        Name="InputPathTextBox"
+                        Text="{Binding Project.InputFile}"
+                        Watermark="Open or drop a video file here" />
+                </Grid>
+            </StackPanel>
+
+            <v:PresetEffectSettingsView DataContext="{Binding PresetEffectSettingsViewModel}"></v:PresetEffectSettingsView>
+            <v:OutputSettingsView DataContext="{Binding OutputSettingsViewModel}" />
+
+            <StackPanel Classes="FieldGroup">
+                <Grid ColumnDefinitions="* Auto">
+                    <Button
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Command="{Binding StartCorruptingCommand}"
+                        Background="{DynamicResource AccentButtonBackground}"
+                        Margin="0 0 8 0">
+                        Corrupt
+                    </Button>
+                    <Button Grid.Column="1" Command="{Binding OpenResultCommand}">Open Result</Button>
+                </Grid>
+
+                <ProgressBar IsIndeterminate="False" Value="{Binding ProgressAmount}" />
+                <TextBlock Text="{Binding ProgressMessage}" TextWrapping="Wrap" />
+            </StackPanel>
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>

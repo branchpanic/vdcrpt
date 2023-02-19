@@ -1,27 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace Vdcrpt.Desktop.Views
 {
-    public class MainWindow : Window
+    public partial class ProjectView : UserControl
     {
         private readonly TextBox _inputPathTextBox;
 
-        public MainWindow()
+        public ProjectView()
         {
             InitializeComponent();
 
-#if DEBUG
-            this.AttachDevTools();
-#endif
-
             _inputPathTextBox = this.Find<TextBox>("InputPathTextBox");
-
             AddHandler(DragDrop.DropEvent, OnDrop);
         }
 
@@ -48,8 +44,14 @@ namespace Vdcrpt.Desktop.Views
             AvaloniaXamlLoader.Load(this);
         }
 
+        // TODO: Rewrite this as a service
         private async void OnOpenPressed(object? sender, RoutedEventArgs routedEventArgs)
         {
+            if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktopLifetime)
+            {
+                return;
+            }
+                
             var dialog = new OpenFileDialog
             {
                 Directory = ".",
@@ -61,7 +63,7 @@ namespace Vdcrpt.Desktop.Views
                 }
             };
 
-            var result = await dialog.ShowAsync(this);
+            var result = await dialog.ShowAsync(desktopLifetime.MainWindow);
             if (result is not { Length: > 0 })
             {
                 return;
