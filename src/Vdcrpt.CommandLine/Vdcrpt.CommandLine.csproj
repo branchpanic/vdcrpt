@@ -6,12 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
-      <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj" />
+        <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj"/>
+        <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
     </ItemGroup>
 
 </Project>

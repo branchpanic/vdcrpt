@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Vdcrpt.Desktop;
 
-class DelegateCommand : ICommand
+internal class DelegateCommand : ICommand
 {
     private readonly Func<object?, bool> _doCanExecute;
     private readonly Action<object?> _doExecute;
@@ -18,9 +18,20 @@ class DelegateCommand : ICommand
         _doExecute = doExecute;
     }
 
-    public bool CanExecute(object? parameter) => _doCanExecute(parameter);
-    public void Execute(object? parameter) => _doExecute(parameter);
-    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    public bool CanExecute(object? parameter)
+    {
+        return _doCanExecute(parameter);
+    }
+
+    public void Execute(object? parameter)
+    {
+        _doExecute(parameter);
+    }
 
     public event EventHandler? CanExecuteChanged;
+
+    public void RaiseCanExecuteChanged()
+    {
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

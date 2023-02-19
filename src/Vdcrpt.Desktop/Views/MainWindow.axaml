@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Vdcrpt.Desktop.ViewModels"
+        xmlns:v="clr-namespace:Vdcrpt.Desktop.Views"
+        mc:Ignorable="d"
+        Width="560" Height="700"
+        MinWidth="350" MinHeight="500"
+        x:Class="Vdcrpt.Desktop.Views.MainWindow"
+        x:Name="Window"
+        Icon="/Assets/Icon.ico"
+        Title="vdcrpt">
+    <Window.Styles>
+        <Style Selector="StackPanel.FieldGroup">
+            <Setter Property="Spacing" Value="8" />
+        </Style>
+    </Window.Styles>
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open..." IsEnabled="False" /> <!-- TODO -->
+                <Separator />
+                <MenuItem Header="Exit" Command="{Binding OnExitPressed}" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="{Binding ProgramInfo.ItchUrl}" />
+                <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="{Binding ProgramInfo.GitHubUrl}" />
+            </MenuItem>
+        </Menu>
+
+        <ScrollViewer>
+            <StackPanel>
+                <Border Background="#222" Margin="0 0 0 8">
+                    <StackPanel Margin="20" Spacing="4">
+                        <TextBlock FontSize="24" Text="{Binding ProgramInfo.Name}" />
+                        <TextBlock Text="{Binding VersionWithPrefix}" />
+                    </StackPanel>
+                </Border>
+
+                <v:ProjectView DataContext="{Binding ProjectViewModel}" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

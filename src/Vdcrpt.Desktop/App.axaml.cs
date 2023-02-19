@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Vdcrpt.Desktop.ViewModels;
+using Vdcrpt.Desktop.Views;
 
 namespace Vdcrpt.Desktop;
 
