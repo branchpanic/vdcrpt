@@ -1,8 +1,7 @@
 using Avalonia.Controls;
 
-namespace Vdcrpt.Desktop.Views
+namespace Vdcrpt.Desktop.Views;
+
+public class OutputSettingsView : UserControl
 {
-    public class OutputSettingsView : UserControl
-    {
-    }
 }

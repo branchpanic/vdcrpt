@@ -22,21 +22,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.18" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+        <PackageReference Include="Avalonia" Version="0.10.18"/>
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.18"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0"/>
 
-        <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
+        <PackageReference Include="Dotnet.Bundle" Version="0.9.13"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj" />
-        <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj" />
+        <ProjectReference Include="..\Vdcrpt\Vdcrpt.csproj"/>
+        <ProjectReference Include="..\Vdcrpt.BuiltIns\Vdcrpt.BuiltIns.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
     <ItemGroup>

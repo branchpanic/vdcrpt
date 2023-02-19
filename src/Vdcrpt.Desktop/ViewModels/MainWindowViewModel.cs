@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -12,10 +11,24 @@ namespace Vdcrpt.Desktop.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty] private Project _project;
-    
+
+    public MainWindowViewModel()
+    {
+        var config = UserConfig.CreateDefault();
+
+        _project = new Project
+        {
+            InputFile = string.Empty,
+            Config = config,
+            EffectSettings = new BinaryRepeatEffectSettings()
+        };
+
+        ProjectViewModel = new ProjectViewModel(_project);
+    }
+
     public ProgramInfo ProgramInfo => ProgramInfo.Default;
     public string VersionWithPrefix => string.Concat("Version ", ProgramInfo.Version);
-    
+
     public ICommand OnExitPressed { get; } = new DelegateCommand(_ =>
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -30,20 +43,6 @@ public partial class MainWindowViewModel : ViewModelBase
     });
 
     public ProjectViewModel ProjectViewModel { get; }
-
-    public MainWindowViewModel()
-    {
-        var config = UserConfig.CreateDefault();
-        
-        _project = new Project()
-        {
-            InputFile = string.Empty,
-            Config = config,
-            EffectSettings = new BinaryRepeatEffectSettings()
-        };
-
-        ProjectViewModel = new ProjectViewModel(_project);
-    }
 
     public void OpenUrl(string url)
     {

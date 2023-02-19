@@ -29,8 +29,10 @@
                 <MenuItem Header="Exit" Command="{Binding OnExitPressed}" />
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}" CommandParameter="{Binding ProgramInfo.ItchUrl}" />
-                <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}" CommandParameter="{Binding ProgramInfo.GitHubUrl}" />
+                <MenuItem Header="Open itch.io Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="{Binding ProgramInfo.ItchUrl}" />
+                <MenuItem Header="Open GitHub Page..." Command="{Binding OpenUrl}"
+                          CommandParameter="{Binding ProgramInfo.GitHubUrl}" />
             </MenuItem>
         </Menu>
 
@@ -38,12 +40,12 @@
             <StackPanel>
                 <Border Background="#222" Margin="0 0 0 8">
                     <StackPanel Margin="20" Spacing="4">
-                        <TextBlock FontSize="24" Text="{Binding ProgramInfo.Name}"/>
+                        <TextBlock FontSize="24" Text="{Binding ProgramInfo.Name}" />
                         <TextBlock Text="{Binding VersionWithPrefix}" />
                     </StackPanel>
                 </Border>
-                
-                <v:ProjectView DataContext="{Binding ProjectViewModel}"></v:ProjectView>
+
+                <v:ProjectView DataContext="{Binding ProjectViewModel}" />
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

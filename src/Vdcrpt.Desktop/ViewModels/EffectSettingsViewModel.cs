@@ -1,13 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Vdcrpt.Desktop.Models;
+﻿using Vdcrpt.Desktop.Models;
 
 namespace Vdcrpt.Desktop.ViewModels;
 
-public partial class EffectSettingsViewModel : ViewModelBase
+public class EffectSettingsViewModel : ViewModelBase
 {
-    public BinaryRepeatEffectSettings Settings { get; }
-    public int MinBurstLengthColumnSpan => Settings.UseBurstLengthRange ? 1 : 3;
-
     public EffectSettingsViewModel(BinaryRepeatEffectSettings settings)
     {
         Settings = settings;
@@ -20,5 +16,10 @@ public partial class EffectSettingsViewModel : ViewModelBase
         };
     }
 
-    public EffectSettingsViewModel() : this(new BinaryRepeatEffectSettings()) { }
+    public EffectSettingsViewModel() : this(new BinaryRepeatEffectSettings())
+    {
+    }
+
+    public BinaryRepeatEffectSettings Settings { get; }
+    public int MinBurstLengthColumnSpan => Settings.UseBurstLengthRange ? 1 : 3;
 }

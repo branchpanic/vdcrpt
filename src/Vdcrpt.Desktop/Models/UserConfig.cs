@@ -1,34 +1,33 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Vdcrpt.Desktop.Models;
 
 public partial class UserConfig : ObservableObject
 {
-    [ObservableProperty] bool _openWhenComplete;
-
-    [ObservableProperty] bool _askForFilename;
-
-    public IReadOnlyList<Preset> Presets { get; private set; }
+    [ObservableProperty] private bool _askForFilename;
+    [ObservableProperty] private bool _openWhenComplete;
 
     public UserConfig()
     {
         Presets = new List<Preset>();
     }
 
+    public IReadOnlyList<Preset> Presets { get; private set; }
+
     public static UserConfig CreateDefault()
     {
-        return new UserConfig()
+        return new UserConfig
         {
             OpenWhenComplete = false,
             AskForFilename = true,
 
-            Presets = new List<Preset>()
+            Presets = new List<Preset>
             {
                 new()
                 {
                     Name = "Melting Chaos",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 3000,
                         MinBurstLength = 8,
@@ -38,7 +37,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Jittery",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 20000,
                         MinBurstLength = 1,
@@ -50,7 +49,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Source Engine",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 45000,
                         MinBurstLength = 2,
@@ -62,7 +61,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Subtle",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 200,
                         MinBurstLength = 2,
@@ -72,7 +71,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Many Artifacts",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 500,
                         MinBurstLength = 3,
@@ -82,7 +81,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Trash (unstable, breaks audio)",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 1,
                         MinBurstLength = 1,
@@ -92,7 +91,7 @@ public partial class UserConfig : ObservableObject
                 new()
                 {
                     Name = "Legacy",
-                    Settings = new()
+                    Settings = new BinaryRepeatEffectSettings
                     {
                         BurstSize = 1000,
                         MinBurstLength = 10,
@@ -100,7 +99,7 @@ public partial class UserConfig : ObservableObject
                         UseBurstLengthRange = true,
                         Iterations = 50
                     }
-                },
+                }
             }
         };
     }

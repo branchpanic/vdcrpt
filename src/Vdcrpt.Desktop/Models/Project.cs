@@ -1,18 +1,14 @@
 ﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Vdcrpt.Desktop.Models;
 
 public partial class Project : ObservableValidator
 {
     [ObservableProperty] [CustomValidation(typeof(Project), nameof(ValidateInputFile))]
-    string _inputFile;
-
-    public UserConfig Config { get; set; }
-    public BinaryRepeatEffectSettings EffectSettings { get; set; }
+    private string _inputFile;
 
     public Project()
     {
@@ -20,6 +16,9 @@ public partial class Project : ObservableValidator
         Config = new UserConfig();
         EffectSettings = new BinaryRepeatEffectSettings();
     }
+
+    public UserConfig Config { get; set; }
+    public BinaryRepeatEffectSettings EffectSettings { get; set; }
 
     public static ValidationResult ValidateInputFile(string inputFile, ValidationContext context)
     {

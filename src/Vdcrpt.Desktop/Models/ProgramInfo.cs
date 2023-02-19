@@ -9,6 +9,13 @@ public record ProgramInfo(
     string GitHubUrl
 )
 {
+    public static readonly ProgramInfo Default = new(
+        "vdcrpt",
+        GetVersionFromAssembly(),
+        "https://branchpanic.itch.io/vdcrpt",
+        "https://github.com/branchpanic/vdcrpt"
+    );
+
     private static string GetVersionFromAssembly()
     {
         var version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -21,11 +28,4 @@ public record ProgramInfo(
 
         return $"{versionString}";
     }
-
-    public static readonly ProgramInfo Default = new(
-        Name: "vdcrpt",
-        Version: GetVersionFromAssembly(),
-        ItchUrl: "https://branchpanic.itch.io/vdcrpt",
-        GitHubUrl: "https://github.com/branchpanic/vdcrpt"
-    );
 }

@@ -27,7 +27,7 @@
                 </Grid>
             </StackPanel>
 
-            <v:PresetEffectSettingsView DataContext="{Binding PresetEffectSettingsViewModel}"></v:PresetEffectSettingsView>
+            <v:PresetEffectSettingsView DataContext="{Binding PresetEffectSettingsViewModel}" />
             <v:OutputSettingsView DataContext="{Binding OutputSettingsViewModel}" />
 
             <StackPanel Classes="FieldGroup">
